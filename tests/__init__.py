@@ -1,0 +1,3 @@
+"""
+Tesseract test suite
+"""
