@@ -1,0 +1,101 @@
+site_name: Tesseract Documentation
+site_description: Cross-Rollup Atomic Transaction Execution System
+site_author: Tesseract Protocol
+site_url: https://tesseract-protocol.github.io/tesseract/
+
+repo_name: tesseract
+repo_url: https://github.com/your-org/tesseract
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Quick Start: getting-started/quick-start.md
+      - Installation: getting-started/installation.md
+      - Your First Transaction: getting-started/first-transaction.md
+  - Core Concepts:
+      - Overview: concepts/overview.md
+      - Transaction Lifecycle: concepts/transaction-lifecycle.md
+      - Cross-Rollup Coordination: concepts/cross-rollup-coordination.md
+      - Security Model: concepts/security-model.md
+  - Guides:
+      - Deployment: guides/deployment.md
+      - Multi-Chain Setup: guides/multi-chain.md
+      - Monitoring: guides/monitoring.md
+      - Troubleshooting: guides/troubleshooting.md
+  - API Reference:
+      - Smart Contract API: api/contract-api.md
+      - Python SDK: api/python-sdk.md
+      - Events: api/events.md
+  - Examples:
+      - Basic Usage: examples/basic-usage.md
+      - Cross-Chain DeFi: examples/cross-chain-defi.md
+      - Dependency Chains: examples/dependency-chains.md
+  - Contributing: contributing.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/your-org/tesseract
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/tesseract
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/tesseractprotocol
+
+copyright: Copyright &copy; 2024 Tesseract Protocol
