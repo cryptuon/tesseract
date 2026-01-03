@@ -1,0 +1,85 @@
+{
+  "networks": {
+    "local": {
+      "name": "Local Hardhat",
+      "chain_id": 31337,
+      "rpc_url": "http://127.0.0.1:8545",
+      "explorer_url": null,
+      "native_currency": "ETH",
+      "is_testnet": true,
+      "requires_private_key": false
+    },
+    "sepolia": {
+      "name": "Ethereum Sepolia",
+      "chain_id": 11155111,
+      "rpc_url_template": "https://eth-sepolia.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://sepolia.etherscan.io",
+      "native_currency": "ETH",
+      "is_testnet": true,
+      "requires_private_key": true,
+      "faucets": [
+        "https://sepoliafaucet.com/",
+        "https://www.alchemy.com/faucets/ethereum-sepolia"
+      ]
+    },
+    "mumbai": {
+      "name": "Polygon Mumbai",
+      "chain_id": 80001,
+      "rpc_url_template": "https://polygon-mumbai.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://mumbai.polygonscan.com",
+      "native_currency": "MATIC",
+      "is_testnet": true,
+      "requires_private_key": true,
+      "faucets": [
+        "https://mumbaifaucet.com/",
+        "https://faucet.polygon.technology/"
+      ]
+    },
+    "arbitrum_goerli": {
+      "name": "Arbitrum Goerli",
+      "chain_id": 421613,
+      "rpc_url_template": "https://arb-goerli.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://goerli.arbiscan.io",
+      "native_currency": "ETH",
+      "is_testnet": true,
+      "requires_private_key": true,
+      "faucets": [
+        "https://faucet.quicknode.com/arbitrum/goerli"
+      ]
+    },
+    "optimism_goerli": {
+      "name": "Optimism Goerli",
+      "chain_id": 420,
+      "rpc_url_template": "https://opt-goerli.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://goerli-optimism.etherscan.io",
+      "native_currency": "ETH",
+      "is_testnet": true,
+      "requires_private_key": true,
+      "faucets": [
+        "https://faucet.quicknode.com/optimism/goerli"
+      ]
+    },
+    "mainnet": {
+      "name": "Ethereum Mainnet",
+      "chain_id": 1,
+      "rpc_url_template": "https://eth-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://etherscan.io",
+      "native_currency": "ETH",
+      "is_testnet": false,
+      "requires_private_key": true,
+      "warning": "MAINNET - Real funds at risk!"
+    },
+    "polygon": {
+      "name": "Polygon Mainnet",
+      "chain_id": 137,
+      "rpc_url_template": "https://polygon-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://polygonscan.com",
+      "native_currency": "MATIC",
+      "is_testnet": false,
+      "requires_private_key": true,
+      "warning": "MAINNET - Real funds at risk!"
+    }
+  },
+  "default_network": "local",
+  "recommended_testnets": ["sepolia", "mumbai"]
+}
