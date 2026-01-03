@@ -1,5 +1,5 @@
 """
-Test suite for Tesseract contract compilation
+Test suite for Tesseract contract compilation (TesseractBuffer.vy)
 """
 
 import pytest
@@ -7,82 +7,149 @@ from pathlib import Path
 from vyper import compile_code
 
 
-def test_contract_compilation():
-    """Test that TesseractSimple.vy compiles successfully"""
-    contract_path = Path(__file__).parent.parent / "contracts" / "TesseractSimple.vy"
+CONTRACT_PATH = Path(__file__).parent.parent / "contracts" / "TesseractBuffer.vy"
 
-    with open(contract_path, 'r') as f:
+
+@pytest.fixture(scope="module")
+def compiled_contract():
+    """Compile TesseractBuffer.vy once for all tests in this module"""
+    with open(CONTRACT_PATH, 'r') as f:
         source_code = f.read()
-
-    # Compile contract
-    compiled = compile_code(
-        source_code,
-        output_formats=['bytecode', 'abi']
-    )
-
-    # Verify compilation
-    assert 'bytecode' in compiled
-    assert 'abi' in compiled
-    assert len(compiled['bytecode']) > 0
-    assert len(compiled['abi']) > 0
+    return compile_code(source_code, output_formats=['bytecode', 'abi'])
 
 
-def test_contract_abi_functions():
-    """Test that contract ABI contains expected functions"""
-    contract_path = Path(__file__).parent.parent / "contracts" / "TesseractSimple.vy"
-
-    with open(contract_path, 'r') as f:
-        source_code = f.read()
-
-    compiled = compile_code(source_code, output_formats=['abi'])
-    abi = compiled['abi']
-
-    # Extract function names
-    function_names = [item['name'] for item in abi if item['type'] == 'function']
-
-    # Expected functions
-    expected_functions = [
-        'add_operator',
-        'remove_operator',
-        'buffer_transaction',
-        'resolve_dependency',
-        'is_transaction_ready',
-        'get_transaction_state',
-        'get_transaction_details',
-        'mark_executed',
-        'set_coordination_window'
-    ]
-
-    for func in expected_functions:
-        assert func in function_names, f"Function {func} not found in ABI"
+@pytest.fixture(scope="module")
+def contract_abi(compiled_contract):
+    """Extract ABI from compiled contract"""
+    return compiled_contract['abi']
 
 
-def test_contract_events():
-    """Test that contract ABI contains expected events"""
-    contract_path = Path(__file__).parent.parent / "contracts" / "TesseractSimple.vy"
+@pytest.fixture(scope="module")
+def function_names(contract_abi):
+    """Extract function names from ABI"""
+    return [item['name'] for item in contract_abi if item['type'] == 'function']
 
-    with open(contract_path, 'r') as f:
-        source_code = f.read()
 
-    compiled = compile_code(source_code, output_formats=['abi'])
-    abi = compiled['abi']
+@pytest.fixture(scope="module")
+def event_names(contract_abi):
+    """Extract event names from ABI"""
+    return [item['name'] for item in contract_abi if item['type'] == 'event']
 
-    # Extract event names
-    event_names = [item['name'] for item in abi if item['type'] == 'event']
 
-    # Expected events
-    expected_events = [
-        'TransactionBuffered',
-        'TransactionReady',
-        'TransactionFailed'
-    ]
+class TestContractCompilation:
+    """Test contract compilation"""
 
-    for event in expected_events:
-        assert event in event_names, f"Event {event} not found in ABI"
+    def test_contract_file_exists(self):
+        """Test that contract file exists"""
+        assert CONTRACT_PATH.exists(), f"Contract file not found: {CONTRACT_PATH}"
+
+    def test_contract_compiles_successfully(self, compiled_contract):
+        """Test that TesseractBuffer.vy compiles successfully"""
+        assert 'bytecode' in compiled_contract
+        assert 'abi' in compiled_contract
+        assert len(compiled_contract['bytecode']) > 0
+        assert len(compiled_contract['abi']) > 0
+
+    def test_bytecode_is_reasonable_size(self, compiled_contract):
+        """Test that bytecode is within expected size range"""
+        bytecode = compiled_contract['bytecode']
+        # Should be larger than TesseractSimple (7,276 bytes) but reasonable
+        assert len(bytecode) > 5000, "Bytecode suspiciously small"
+        assert len(bytecode) < 50000, "Bytecode suspiciously large"
+
+
+class TestContractFunctions:
+    """Test contract ABI functions"""
+
+    def test_has_constructor(self, contract_abi):
+        """Test that contract has constructor"""
+        constructors = [item for item in contract_abi if item['type'] == 'constructor']
+        assert len(constructors) == 1, "Contract should have exactly one constructor"
+
+    def test_core_transaction_functions(self, function_names):
+        """Test core transaction functions exist"""
+        expected = [
+            'buffer_transaction',
+            'resolve_dependency',
+            'is_transaction_ready',
+            'get_transaction_state',
+            'get_transaction',
+            'mark_transaction_executed'
+        ]
+        for func in expected:
+            assert func in function_names, f"Missing core function: {func}"
+
+    def test_access_control_functions(self, function_names):
+        """Test access control functions exist"""
+        expected = [
+            'owner',
+            'grant_role',
+            'revoke_role',
+            'has_role',
+            'transfer_ownership'
+        ]
+        for func in expected:
+            assert func in function_names, f"Missing access control function: {func}"
+
+    def test_emergency_functions(self, function_names):
+        """Test emergency functions exist"""
+        expected = [
+            'emergency_admin',
+            'paused',
+            'emergency_pause',
+            'emergency_unpause',
+            'reset_circuit_breaker',
+            'circuit_breaker_active',
+            'circuit_breaker_threshold',
+            'set_emergency_admin'
+        ]
+        for func in expected:
+            assert func in function_names, f"Missing emergency function: {func}"
+
+    def test_configuration_functions(self, function_names):
+        """Test configuration functions exist"""
+        expected = [
+            'coordination_window',
+            'set_coordination_window',
+            'max_payload_size',
+            'set_max_payload_size',
+            'set_circuit_breaker_threshold'
+        ]
+        for func in expected:
+            assert func in function_names, f"Missing configuration function: {func}"
+
+
+class TestContractEvents:
+    """Test contract ABI events"""
+
+    def test_transaction_events(self, event_names):
+        """Test transaction-related events exist"""
+        expected = [
+            'TransactionBuffered',
+            'TransactionReady',
+            'TransactionFailed'
+        ]
+        for event in expected:
+            assert event in event_names, f"Missing transaction event: {event}"
+
+    def test_emergency_events(self, event_names):
+        """Test emergency events exist"""
+        expected = [
+            'EmergencyPause',
+            'EmergencyUnpause'
+        ]
+        for event in expected:
+            assert event in event_names, f"Missing emergency event: {event}"
+
+    def test_access_control_events(self, event_names):
+        """Test access control events exist"""
+        expected = [
+            'RoleGranted',
+            'RoleRevoked'
+        ]
+        for event in expected:
+            assert event in event_names, f"Missing access control event: {event}"
 
 
 if __name__ == "__main__":
-    test_contract_compilation()
-    test_contract_abi_functions()
-    test_contract_events()
-    print("All compilation tests passed!")
+    pytest.main([__file__, "-v"])
