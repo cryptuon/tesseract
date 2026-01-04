@@ -1,0 +1,141 @@
+name: Deploy to Testnet
+
+on:
+  push:
+    tags:
+      - 'testnet-*'
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Target network'
+        required: true
+        type: choice
+        options:
+          - sepolia
+          - mumbai
+          - arbitrum_goerli
+          - optimism_goerli
+        default: sepolia
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  validate:
+    name: Validate Before Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run tests
+        run: uv run pytest tests/test_compilation.py tests/test_access_control.py -v
+
+      - name: Compile contracts
+        run: uv run python -c "import vyper; vyper.compile_code(open('contracts/TesseractBuffer.vy').read())"
+
+  deploy:
+    name: Deploy to ${{ inputs.network || 'sepolia' }}
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: testnet
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Create .env file
+        run: |
+          echo "ALCHEMY_API_KEY=${{ secrets.ALCHEMY_API_KEY }}" >> .env
+          echo "DEPLOYER_PRIVATE_KEY=${{ secrets.TESTNET_DEPLOYER_PRIVATE_KEY }}" >> .env
+
+      - name: Validate environment
+        run: uv run python scripts/setup_environment.py ${{ inputs.network || 'sepolia' }}
+
+      - name: Deploy contract
+        id: deploy
+        run: |
+          uv run python scripts/deploy_simple.py ${{ inputs.network || 'sepolia' }} 2>&1 | tee deploy_output.txt
+          # Extract contract address from output
+          CONTRACT_ADDRESS=$(grep -oP 'Contract deployed at: \K0x[a-fA-F0-9]+' deploy_output.txt || echo "")
+          echo "contract_address=$CONTRACT_ADDRESS" >> $GITHUB_OUTPUT
+
+      - name: Verify deployment
+        run: uv run python scripts/verify_deployment.py ${{ inputs.network || 'sepolia' }}
+
+      - name: Health check
+        run: |
+          uv run python scripts/health_check.py ${{ inputs.network || 'sepolia' }} json > health.json
+          cat health.json
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-${{ inputs.network || 'sepolia' }}-${{ github.run_number }}
+          path: |
+            deployments/
+            health.json
+            deploy_output.txt
+
+      - name: Notify on Slack
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,workflow
+          text: |
+            Testnet deployment to ${{ inputs.network || 'sepolia' }}
+            Contract: ${{ steps.deploy.outputs.contract_address }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
+
+  verify-explorer:
+    name: Verify on Block Explorer
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Download deployment artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-${{ inputs.network || 'sepolia' }}-${{ github.run_number }}
+
+      - name: Verify on explorer
+        run: |
+          uv run python scripts/verify_on_explorer.py ${{ inputs.network || 'sepolia' }}
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
+        continue-on-error: true

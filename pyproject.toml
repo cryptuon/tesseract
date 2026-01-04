@@ -20,6 +20,13 @@ dependencies = [
 dev = [
     "black>=23.0.0",
     "pytest-cov>=4.0.0",
+    "ruff>=0.8.0",
+    "bandit>=1.7.0",
+    "pip-audit>=2.7.0",
+]
+test = [
+    "pytest-asyncio>=0.23.0",
+    "hypothesis>=6.0.0",
 ]
 docs = [
     "mkdocs>=1.5.0",
@@ -61,3 +68,18 @@ exclude_lines = [
 ]
 fail_under = 80
 show_missing = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "C4", "UP"]
+ignore = ["E501"]  # Line too long - handled by formatter
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]
+skips = ["B101"]  # Allow assert statements

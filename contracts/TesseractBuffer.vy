@@ -2,6 +2,13 @@
 """
 Tesseract: Cross-Rollup Atomic Transaction Execution System
 A secure system for coordinating atomic transactions across multiple rollups
+
+Features:
+- Cross-rollup transaction buffering with dependency resolution
+- MEV protection via commit-reveal pattern
+- Flash loan protection via block delay
+- Atomic swap groups for multi-leg coordination
+- Refund mechanism for expired transactions
 """
 
 from vyper.interfaces import ERC20
@@ -41,6 +48,24 @@ event RoleRevoked:
     account: indexed(address)
     sender: indexed(address)
 
+event TransactionRevealed:
+    tx_id: indexed(bytes32)
+    revealed_at: uint256
+
+event TransactionRefunded:
+    tx_id: indexed(bytes32)
+    recipient: indexed(address)
+    refunded_at: uint256
+
+event SwapGroupCreated:
+    group_id: indexed(bytes32)
+    creator: indexed(address)
+    created_at: uint256
+
+event SwapGroupCompleted:
+    group_id: indexed(bytes32)
+    completed_at: uint256
+
 # Enums
 enum TransactionState:
     EMPTY
@@ -49,6 +74,7 @@ enum TransactionState:
     EXECUTED
     FAILED
     EXPIRED
+    REFUNDED
 
 # Structs
 struct BufferedTransaction:
@@ -60,6 +86,13 @@ struct BufferedTransaction:
     state: TransactionState
     expiry: uint256
     confirmations: uint256
+    # DeFi security fields
+    commitment_hash: bytes32      # For commit-reveal MEV protection
+    reveal_deadline: uint256      # When reveal must happen
+    creator: address              # Original transaction creator
+    refund_recipient: address     # Where to send refunds
+    swap_group_id: bytes32        # Links related swap legs
+    creation_block: uint256       # For flash loan protection
 
 # Constants
 BUFFER_ROLE: constant(bytes32) = keccak256("BUFFER_ROLE")
@@ -72,6 +105,12 @@ MAX_PAYLOAD_SIZE: constant(uint256) = 2048
 MAX_FUTURE_TIMESTAMP: constant(uint256) = 86400  # 24 hours
 DEFAULT_COORDINATION_WINDOW: constant(uint256) = 30  # 30 seconds
 RESET_COOLDOWN: constant(uint256) = 3600  # 1 hour
+
+# DeFi security constants
+MIN_RESOLUTION_DELAY: constant(uint256) = 2       # Blocks between buffer and resolve (flash loan protection)
+MIN_REVEAL_WINDOW: constant(uint256) = 12         # Minimum blocks for reveal (~2.5 min at 12s)
+MAX_REVEAL_WINDOW: constant(uint256) = 100        # Maximum blocks for reveal (~20 min)
+MAX_SWAP_GROUP_SIZE: constant(uint256) = 4        # Max legs in an atomic swap
 
 # State variables
 owner: public(address)
@@ -101,6 +140,12 @@ transaction_lock: HashMap[bytes32, bool]
 # Configuration
 coordination_window: public(uint256)
 max_payload_size: public(uint256)
+
+# DeFi security state
+swap_group_txs: HashMap[bytes32, bytes32[4]]      # group_id -> tx_ids (fixed size array)
+swap_group_count: public(HashMap[bytes32, uint256])  # group_id -> number of txs in group
+swap_group_ready: HashMap[bytes32, uint256]       # group_id -> number of ready txs
+reveals: public(HashMap[bytes32, bool])            # tx_id -> has been revealed
 
 @external
 def __init__():
@@ -222,7 +267,13 @@ def buffer_transaction(
         timestamp: timestamp,
         state: TransactionState.BUFFERED,
         expiry: expiry,
-        confirmations: 0
+        confirmations: 0,
+        commitment_hash: empty(bytes32),
+        reveal_deadline: 0,
+        creator: msg.sender,
+        refund_recipient: msg.sender,
+        swap_group_id: empty(bytes32),
+        creation_block: block.number
     })
 
     self.transaction_count += 1
@@ -255,6 +306,13 @@ def resolve_dependency(tx_id: bytes32):
         self._record_failure(tx_id, "Transaction not in buffered state")
         raise "Transaction not in buffered state"
 
+    # Flash loan protection: must wait minimum blocks after creation
+    assert block.number >= buffered_tx.creation_block + MIN_RESOLUTION_DELAY, "Resolution too soon - flash loan protection"
+
+    # If commitment was used, must be revealed first
+    if buffered_tx.commitment_hash != empty(bytes32):
+        assert self.reveals[tx_id], "Transaction not revealed"
+
     # Check if transaction has expired
     if block.timestamp > buffered_tx.expiry:
         self.buffered_transactions[tx_id].state = TransactionState.EXPIRED
@@ -274,6 +332,14 @@ def resolve_dependency(tx_id: bytes32):
     if dependency_resolved and timing_valid:
         self.buffered_transactions[tx_id].state = TransactionState.READY
         self.transaction_lock[tx_id] = False
+
+        # Update swap group ready count
+        if buffered_tx.swap_group_id != empty(bytes32):
+            self.swap_group_ready[buffered_tx.swap_group_id] += 1
+            # Check if all transactions in swap group are ready
+            if self.swap_group_ready[buffered_tx.swap_group_id] == self.swap_group_count[buffered_tx.swap_group_id]:
+                log SwapGroupCompleted(buffered_tx.swap_group_id, block.timestamp)
+
         log TransactionReady(tx_id, block.timestamp)
     else:
         self.transaction_lock[tx_id] = False
@@ -309,6 +375,222 @@ def mark_transaction_executed(tx_id: bytes32):
     assert buffered_tx.state == TransactionState.READY, "Transaction not ready"
 
     self.buffered_transactions[tx_id].state = TransactionState.EXECUTED
+
+
+# DeFi Security Functions
+
+@external
+def buffer_transaction_with_commitment(
+    tx_id: bytes32,
+    origin_rollup: address,
+    target_rollup: address,
+    commitment_hash: bytes32,
+    dependency_tx_id: bytes32,
+    timestamp: uint256,
+    swap_group_id: bytes32,
+    refund_recipient: address
+):
+    """
+    Buffer a transaction with MEV protection via commit-reveal pattern.
+
+    The actual payload is hidden until reveal_transaction is called.
+    This prevents frontrunning by MEV bots.
+    """
+    self._check_not_paused()
+    self._check_circuit_breaker()
+    self._check_role(BUFFER_ROLE, msg.sender)
+    self._check_rate_limits()
+
+    # Validate inputs
+    assert tx_id != empty(bytes32), "Invalid transaction ID"
+    assert origin_rollup != empty(address), "Invalid origin rollup"
+    assert target_rollup != empty(address), "Invalid target rollup"
+    assert origin_rollup != target_rollup, "Origin and target cannot be same"
+    assert commitment_hash != empty(bytes32), "Invalid commitment hash"
+    assert refund_recipient != empty(address), "Invalid refund recipient"
+    assert timestamp >= block.timestamp, "Timestamp cannot be in the past"
+    assert timestamp <= block.timestamp + MAX_FUTURE_TIMESTAMP, "Timestamp too far in future"
+
+    # Check transaction doesn't already exist
+    assert self.buffered_transactions[tx_id].state == TransactionState.EMPTY, "Transaction already exists"
+
+    # Validate and track swap group
+    if swap_group_id != empty(bytes32):
+        current_count: uint256 = self.swap_group_count[swap_group_id]
+        assert current_count < MAX_SWAP_GROUP_SIZE, "Swap group full"
+        self.swap_group_txs[swap_group_id][current_count] = tx_id
+        self.swap_group_count[swap_group_id] = current_count + 1
+
+        # Log swap group creation on first transaction
+        if current_count == 0:
+            log SwapGroupCreated(swap_group_id, msg.sender, block.timestamp)
+
+    # Calculate reveal deadline and expiry
+    reveal_deadline: uint256 = block.number + MIN_REVEAL_WINDOW
+    expiry: uint256 = timestamp + self.coordination_window
+
+    # Store transaction with empty payload (will be revealed later)
+    self.buffered_transactions[tx_id] = BufferedTransaction({
+        origin_rollup: origin_rollup,
+        target_rollup: target_rollup,
+        payload: b"",
+        dependency_tx_id: dependency_tx_id,
+        timestamp: timestamp,
+        state: TransactionState.BUFFERED,
+        expiry: expiry,
+        confirmations: 0,
+        commitment_hash: commitment_hash,
+        reveal_deadline: reveal_deadline,
+        creator: msg.sender,
+        refund_recipient: refund_recipient,
+        swap_group_id: swap_group_id,
+        creation_block: block.number
+    })
+
+    self.transaction_count += 1
+
+    log TransactionBuffered(tx_id, origin_rollup, target_rollup, dependency_tx_id, timestamp)
+
+
+@external
+def reveal_transaction(tx_id: bytes32, payload: Bytes[2048], secret: bytes32):
+    """
+    Reveal the actual payload for a committed transaction.
+
+    The payload + secret must hash to the original commitment_hash.
+    This is the second phase of commit-reveal MEV protection.
+    """
+    self._check_not_paused()
+    self._check_role(BUFFER_ROLE, msg.sender)
+
+    buffered_tx: BufferedTransaction = self.buffered_transactions[tx_id]
+
+    # Validate state
+    assert buffered_tx.state == TransactionState.BUFFERED, "Transaction not buffered"
+    assert not self.reveals[tx_id], "Already revealed"
+    assert buffered_tx.commitment_hash != empty(bytes32), "No commitment to reveal"
+
+    # Check reveal window
+    assert block.number >= buffered_tx.creation_block + 1, "Too early to reveal"
+    assert block.number <= buffered_tx.reveal_deadline, "Reveal deadline passed"
+
+    # Verify commitment (payload + secret hashes to stored commitment)
+    computed_hash: bytes32 = keccak256(concat(payload, secret))
+    assert computed_hash == buffered_tx.commitment_hash, "Invalid reveal - hash mismatch"
+
+    # Validate payload
+    assert len(payload) > 0, "Empty payload not allowed"
+    assert len(payload) <= self.max_payload_size, "Payload too large"
+
+    # Store revealed payload
+    self.buffered_transactions[tx_id].payload = payload
+    self.reveals[tx_id] = True
+
+    log TransactionRevealed(tx_id, block.timestamp)
+
+
+@external
+def add_to_swap_group(tx_id: bytes32, swap_group_id: bytes32):
+    """
+    Add an existing buffered transaction to a swap group.
+
+    This allows linking related transactions for atomic coordination.
+    """
+    self._check_role(BUFFER_ROLE, msg.sender)
+
+    buffered_tx: BufferedTransaction = self.buffered_transactions[tx_id]
+
+    # Validate transaction exists and is in correct state
+    assert buffered_tx.state == TransactionState.BUFFERED, "Transaction not buffered"
+    assert buffered_tx.swap_group_id == empty(bytes32), "Already in a swap group"
+    assert swap_group_id != empty(bytes32), "Invalid swap group ID"
+
+    # Check swap group has room
+    current_count: uint256 = self.swap_group_count[swap_group_id]
+    assert current_count < MAX_SWAP_GROUP_SIZE, "Swap group full"
+
+    # Add to swap group
+    self.swap_group_txs[swap_group_id][current_count] = tx_id
+    self.swap_group_count[swap_group_id] = current_count + 1
+    self.buffered_transactions[tx_id].swap_group_id = swap_group_id
+
+    # Log swap group creation on first transaction
+    if current_count == 0:
+        log SwapGroupCreated(swap_group_id, msg.sender, block.timestamp)
+
+
+@external
+def claim_refund(tx_id: bytes32):
+    """
+    Claim a refund for an expired or failed transaction.
+
+    Only the designated refund_recipient can claim.
+    Marks transaction as REFUNDED to prevent double claims.
+    """
+    buffered_tx: BufferedTransaction = self.buffered_transactions[tx_id]
+
+    # Must be expired or failed
+    assert buffered_tx.state == TransactionState.EXPIRED or buffered_tx.state == TransactionState.FAILED, "Not refundable"
+
+    # Only refund recipient can claim
+    assert msg.sender == buffered_tx.refund_recipient, "Not refund recipient"
+
+    # Mark as refunded (prevents double claims)
+    self.buffered_transactions[tx_id].state = TransactionState.REFUNDED
+
+    log TransactionRefunded(tx_id, msg.sender, block.timestamp)
+
+
+@external
+def expire_swap_group(swap_group_id: bytes32):
+    """
+    Expire all transactions in a swap group if any has timed out.
+
+    This enables atomic refunds for failed multi-leg swaps.
+    """
+    self._check_role(RESOLVE_ROLE, msg.sender)
+
+    assert swap_group_id != empty(bytes32), "Invalid swap group ID"
+    group_size: uint256 = self.swap_group_count[swap_group_id]
+    assert group_size > 0, "Swap group not found"
+
+    # Check if any transaction in group has expired
+    any_expired: bool = False
+    for i in range(MAX_SWAP_GROUP_SIZE):
+        if i >= group_size:
+            break
+        tx_id: bytes32 = self.swap_group_txs[swap_group_id][i]
+        buffered_tx: BufferedTransaction = self.buffered_transactions[tx_id]
+        if block.timestamp > buffered_tx.expiry:
+            any_expired = True
+            break
+
+    assert any_expired, "No expired transactions in group"
+
+    # Expire all non-executed transactions in the group
+    for i in range(MAX_SWAP_GROUP_SIZE):
+        if i >= group_size:
+            break
+        tx_id: bytes32 = self.swap_group_txs[swap_group_id][i]
+        buffered_tx: BufferedTransaction = self.buffered_transactions[tx_id]
+        if buffered_tx.state == TransactionState.BUFFERED or buffered_tx.state == TransactionState.READY:
+            self.buffered_transactions[tx_id].state = TransactionState.EXPIRED
+            self._record_failure(tx_id, "Swap group timeout")
+
+
+@view
+@external
+def get_swap_group_status(swap_group_id: bytes32) -> (uint256, uint256, bool):
+    """
+    Get the status of a swap group.
+
+    Returns: (total_count, ready_count, all_ready)
+    """
+    total: uint256 = self.swap_group_count[swap_group_id]
+    ready: uint256 = self.swap_group_ready[swap_group_id]
+    all_ready: bool = (total > 0) and (ready == total)
+    return (total, ready, all_ready)
+
 
 # Emergency Functions
 @external

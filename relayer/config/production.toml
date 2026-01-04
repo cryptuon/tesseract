@@ -1,0 +1,123 @@
+# Tesseract Relayer Configuration - Production
+# Copy this file and set appropriate values for your deployment
+
+[relayer]
+instance_id = "tesseract-relayer-prod"
+poll_interval_ms = 2000
+max_concurrent_txs = 20
+max_retries = 5
+retry_delay_ms = 10000
+health_check_interval_secs = 60
+
+[database]
+url = "${DATABASE_URL}"
+max_connections = 20
+min_connections = 5
+
+[api]
+host = "0.0.0.0"
+port = 8080
+
+[metrics]
+enabled = true
+port = 9090
+
+# Production chain configurations
+# Enable only the chains you want to support
+
+[chains.ethereum]
+chain_id = 1
+name = "Ethereum Mainnet"
+rpc_urls = [
+    "https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://mainnet.infura.io/v3/${INFURA_API_KEY}"
+]
+ws_url = "wss://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = "${ETHEREUM_CONTRACT_ADDRESS}"
+coordinator_address = "${ETHEREUM_COORDINATOR_ADDRESS}"
+confirmation_blocks = 32
+gas_price_strategy = "eip1559"
+max_gas_price_gwei = 200
+enabled = true
+
+[chains.polygon]
+chain_id = 137
+name = "Polygon Mainnet"
+rpc_urls = [
+    "https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://polygon-rpc.com"
+]
+ws_url = "wss://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = "${POLYGON_CONTRACT_ADDRESS}"
+coordinator_address = "${POLYGON_COORDINATOR_ADDRESS}"
+confirmation_blocks = 128
+gas_price_strategy = "eip1559"
+max_gas_price_gwei = 1000
+enabled = true
+
+[chains.arbitrum]
+chain_id = 42161
+name = "Arbitrum One"
+rpc_urls = [
+    "https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://arb1.arbitrum.io/rpc"
+]
+ws_url = "wss://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = "${ARBITRUM_CONTRACT_ADDRESS}"
+coordinator_address = "${ARBITRUM_COORDINATOR_ADDRESS}"
+confirmation_blocks = 64
+gas_price_strategy = "arbitrum"
+max_gas_price_gwei = 5
+enabled = true
+
+[chains.optimism]
+chain_id = 10
+name = "Optimism Mainnet"
+rpc_urls = [
+    "https://opt-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://mainnet.optimism.io"
+]
+ws_url = "wss://opt-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = "${OPTIMISM_CONTRACT_ADDRESS}"
+coordinator_address = "${OPTIMISM_COORDINATOR_ADDRESS}"
+confirmation_blocks = 64
+gas_price_strategy = "optimism"
+max_gas_price_gwei = 5
+enabled = true
+
+[chains.base]
+chain_id = 8453
+name = "Base Mainnet"
+rpc_urls = [
+    "https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://mainnet.base.org"
+]
+ws_url = "wss://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = "${BASE_CONTRACT_ADDRESS}"
+coordinator_address = "${BASE_COORDINATOR_ADDRESS}"
+confirmation_blocks = 64
+gas_price_strategy = "optimism"
+max_gas_price_gwei = 5
+enabled = true
+
+[chains.avalanche]
+chain_id = 43114
+name = "Avalanche C-Chain"
+rpc_urls = [
+    "https://api.avax.network/ext/bc/C/rpc"
+]
+ws_url = "wss://api.avax.network/ext/bc/C/ws"
+contract_address = "${AVALANCHE_CONTRACT_ADDRESS}"
+coordinator_address = "${AVALANCHE_COORDINATOR_ADDRESS}"
+confirmation_blocks = 1
+gas_price_strategy = "eip1559"
+max_gas_price_gwei = 200
+enabled = true
+
+[wallet]
+keystore_path = "/secrets/relayer-keystore.json"
+
+[alerts]
+min_balance_eth = 0.5
+slack_webhook_url = "${SLACK_WEBHOOK_URL}"
+pagerduty_key = "${PAGERDUTY_KEY}"

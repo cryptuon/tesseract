@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  relayer:
+    build: .
+    ports:
+      - "8080:8080"   # API
+      - "9090:9090"   # Metrics
+    environment:
+      - TESSERACT_CONFIG=/app/config/default.toml
+      - DATABASE_URL=postgres://tesseract:tesseract@postgres:5432/tesseract_relayer
+      - RELAYER_PRIVATE_KEY=${RELAYER_PRIVATE_KEY}
+      - ALCHEMY_API_KEY=${ALCHEMY_API_KEY}
+      - INFURA_API_KEY=${INFURA_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=tesseract
+      - POSTGRES_PASSWORD=tesseract
+      - POSTGRES_DB=tesseract_relayer
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tesseract -d tesseract_relayer"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - relayer
+
+  grafana:
+    image: grafana/grafana:10.2.2
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:

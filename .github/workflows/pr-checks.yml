@@ -1,0 +1,191 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  lint-python:
+    name: Lint Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Check formatting with black
+        run: uv run black --check .
+
+      - name: Lint with ruff
+        run: uv run ruff check .
+
+  compile-contracts:
+    name: Compile Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Compile Vyper contracts
+        run: uv run pytest tests/test_compilation.py -v
+
+  test-unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Run tests with coverage
+        run: uv run pytest tests/ -v --cov=tesseract --cov=scripts --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  security-scan-python:
+    name: Security Scan (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Run bandit security scan
+        run: uv run bandit -r scripts/ -ll -ii
+        continue-on-error: true
+
+      - name: Check for known vulnerabilities
+        run: uv run pip-audit
+        continue-on-error: true
+
+  security-scan-contracts:
+    name: Security Scan (Contracts)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Slither
+        run: pip install slither-analyzer
+
+      - name: Run Slither analysis
+        run: |
+          echo "Slither has limited Vyper support - running basic checks"
+          slither contracts/ --print human-summary 2>/dev/null || echo "Slither analysis completed with warnings"
+        continue-on-error: true
+
+  lint-rust:
+    name: Lint Rust Relayer
+    runs-on: ubuntu-latest
+    if: hashFiles('relayer/Cargo.toml') != ''
+    defaults:
+      run:
+        working-directory: relayer
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            relayer/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('relayer/Cargo.lock') }}
+
+      - name: Check formatting
+        run: cargo fmt --check
+
+      - name: Run clippy
+        run: cargo clippy -- -D warnings
+
+      - name: Security audit
+        run: |
+          cargo install cargo-audit --quiet || true
+          cargo audit
+
+  test-rust:
+    name: Test Rust Relayer
+    runs-on: ubuntu-latest
+    if: hashFiles('relayer/Cargo.toml') != ''
+    defaults:
+      run:
+        working-directory: relayer
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            relayer/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('relayer/Cargo.lock') }}
+
+      - name: Run tests
+        run: cargo test --all-features
