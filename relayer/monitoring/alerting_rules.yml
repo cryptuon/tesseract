@@ -1,0 +1,128 @@
+groups:
+  - name: tesseract_critical
+    rules:
+      # Contract Paused Alert
+      - alert: TesseractContractPaused
+        expr: max(tesseract_contract_paused) == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Tesseract contract is paused"
+          description: "The Tesseract contract has been paused. All operations are halted."
+          runbook_url: "https://docs.tesseract.io/runbooks/contract-paused"
+
+      # Circuit Breaker Active
+      - alert: TesseractCircuitBreakerActive
+        expr: max(tesseract_circuit_breaker_active) == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Circuit breaker is active"
+          description: "The circuit breaker has been triggered due to excessive failures."
+          runbook_url: "https://docs.tesseract.io/runbooks/circuit-breaker"
+
+      # Low Wallet Balance
+      - alert: TesseractLowWalletBalance
+        expr: min(tesseract_wallet_balance_eth) < 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Relayer wallet balance critically low"
+          description: "Wallet balance is {{ $value | printf \"%.4f\" }} ETH. Minimum 0.1 ETH required."
+          runbook_url: "https://docs.tesseract.io/runbooks/low-balance"
+
+      # Chain Disconnected
+      - alert: TesseractChainDisconnected
+        expr: tesseract_chain_connected == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Chain {{ $labels.chain_id }} is disconnected"
+          description: "Lost connection to chain {{ $labels.chain_id }} for more than 2 minutes."
+          runbook_url: "https://docs.tesseract.io/runbooks/chain-disconnected"
+
+  - name: tesseract_warning
+    rules:
+      # High Failure Rate
+      - alert: TesseractHighFailureRate
+        expr: |
+          (
+            sum(increase(tesseract_transactions_failed_total[1h]))
+            /
+            sum(increase(tesseract_transactions_submitted_total[1h]))
+          ) * 100 > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Transaction failure rate exceeds 10%"
+          description: "Transaction failure rate is {{ $value | printf \"%.1f\" }}% over the last hour."
+          runbook_url: "https://docs.tesseract.io/runbooks/high-failure-rate"
+
+      # Block Sync Lag
+      - alert: TesseractBlockSyncLag
+        expr: tesseract_block_sync_lag > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Block sync lag on chain {{ $labels.chain_id }}"
+          description: "Chain {{ $labels.chain_id }} is {{ $value }} blocks behind."
+          runbook_url: "https://docs.tesseract.io/runbooks/block-sync-lag"
+
+      # High Latency
+      - alert: TesseractHighLatency
+        expr: histogram_quantile(0.95, sum by (le) (rate(tesseract_transaction_latency_seconds_bucket[5m]))) > 60
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High transaction latency"
+          description: "P95 transaction latency is {{ $value | printf \"%.1f\" }} seconds."
+          runbook_url: "https://docs.tesseract.io/runbooks/high-latency"
+
+      # Low Transaction Throughput
+      - alert: TesseractLowThroughput
+        expr: sum(rate(tesseract_transactions_submitted_total[5m])) * 60 < 1
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low transaction throughput"
+          description: "Less than 1 transaction per minute over the last 15 minutes."
+          runbook_url: "https://docs.tesseract.io/runbooks/low-throughput"
+
+      # Wallet Balance Warning
+      - alert: TesseractWalletBalanceWarning
+        expr: min(tesseract_wallet_balance_eth) < 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Relayer wallet balance is low"
+          description: "Wallet balance is {{ $value | printf \"%.4f\" }} ETH. Consider topping up."
+          runbook_url: "https://docs.tesseract.io/runbooks/low-balance"
+
+  - name: tesseract_info
+    rules:
+      # Circuit Breaker Reset
+      - alert: TesseractCircuitBreakerReset
+        expr: increase(tesseract_circuit_breaker_resets_total[5m]) > 0
+        labels:
+          severity: info
+        annotations:
+          summary: "Circuit breaker was reset"
+          description: "The circuit breaker has been reset and normal operation resumed."
+
+      # New Chain Connected
+      - alert: TesseractNewChainConnected
+        expr: increase(tesseract_chain_reconnections_total[5m]) > 0
+        labels:
+          severity: info
+        annotations:
+          summary: "Chain {{ $labels.chain_id }} reconnected"
+          description: "Successfully reconnected to chain {{ $labels.chain_id }}."

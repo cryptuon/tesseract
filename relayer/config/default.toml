@@ -1,0 +1,254 @@
+# Tesseract Relayer Configuration
+# Default configuration for development/testing
+
+[relayer]
+# Unique identifier for this relayer instance
+instance_id = "tesseract-relayer-1"
+
+# Polling interval for event listening (milliseconds)
+poll_interval_ms = 1000
+
+# Maximum concurrent transactions per chain
+max_concurrent_txs = 10
+
+# Retry configuration
+max_retries = 3
+retry_delay_ms = 5000
+
+# Health check interval (seconds)
+health_check_interval_secs = 30
+
+[database]
+# PostgreSQL connection
+url = "postgres://tesseract:tesseract@localhost:5432/tesseract_relayer"
+max_connections = 10
+min_connections = 2
+
+[api]
+# HTTP API for health/status
+host = "0.0.0.0"
+port = 8080
+
+[metrics]
+# Prometheus metrics
+enabled = true
+port = 9090
+
+# Chain configurations
+# Each chain has:
+# - chain_id: Numeric chain ID
+# - name: Human-readable name
+# - rpc_urls: List of RPC endpoints (primary + fallbacks)
+# - ws_url: WebSocket URL for event streaming
+# - contract_address: TesseractBuffer contract address
+# - coordinator_address: AtomicSwapCoordinator contract address
+# - confirmation_blocks: Blocks to wait for finality
+# - gas_price_strategy: "legacy", "eip1559", or "optimism"
+# - max_gas_price_gwei: Maximum gas price willing to pay
+# - enabled: Whether to enable this chain
+
+[chains.ethereum]
+chain_id = 1
+name = "Ethereum Mainnet"
+rpc_urls = [
+    "https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://mainnet.infura.io/v3/${INFURA_API_KEY}",
+    "https://rpc.ankr.com/eth"
+]
+ws_url = "wss://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = ""  # Set after deployment
+coordinator_address = ""
+confirmation_blocks = 32  # ~6 minutes for finality
+gas_price_strategy = "eip1559"
+max_gas_price_gwei = 100
+enabled = false
+
+[chains.ethereum_sepolia]
+chain_id = 11155111
+name = "Ethereum Sepolia"
+rpc_urls = [
+    "https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://sepolia.infura.io/v3/${INFURA_API_KEY}",
+    "https://rpc.ankr.com/eth_sepolia"
+]
+ws_url = "wss://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = ""
+coordinator_address = ""
+confirmation_blocks = 12
+gas_price_strategy = "eip1559"
+max_gas_price_gwei = 50
+enabled = true
+
+[chains.polygon]
+chain_id = 137
+name = "Polygon Mainnet"
+rpc_urls = [
+    "https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://polygon-rpc.com",
+    "https://rpc.ankr.com/polygon"
+]
+ws_url = "wss://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = ""
+coordinator_address = ""
+confirmation_blocks = 128  # ~4-5 minutes
+gas_price_strategy = "eip1559"
+max_gas_price_gwei = 500
+enabled = false
+
+[chains.polygon_amoy]
+chain_id = 80002
+name = "Polygon Amoy Testnet"
+rpc_urls = [
+    "https://polygon-amoy.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://rpc-amoy.polygon.technology"
+]
+ws_url = "wss://polygon-amoy.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = ""
+coordinator_address = ""
+confirmation_blocks = 32
+gas_price_strategy = "eip1559"
+max_gas_price_gwei = 100
+enabled = true
+
+[chains.arbitrum]
+chain_id = 42161
+name = "Arbitrum One"
+rpc_urls = [
+    "https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://arb1.arbitrum.io/rpc",
+    "https://rpc.ankr.com/arbitrum"
+]
+ws_url = "wss://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = ""
+coordinator_address = ""
+# Arbitrum finality depends on L1 (Ethereum) - we use challenge period
+confirmation_blocks = 64  # Plus L1 finality monitoring
+gas_price_strategy = "arbitrum"
+max_gas_price_gwei = 1  # Arbitrum has low gas costs
+enabled = false
+
+[chains.arbitrum_sepolia]
+chain_id = 421614
+name = "Arbitrum Sepolia"
+rpc_urls = [
+    "https://arb-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://sepolia-rollup.arbitrum.io/rpc"
+]
+ws_url = "wss://arb-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = ""
+coordinator_address = ""
+confirmation_blocks = 16
+gas_price_strategy = "arbitrum"
+max_gas_price_gwei = 1
+enabled = true
+
+[chains.optimism]
+chain_id = 10
+name = "Optimism Mainnet"
+rpc_urls = [
+    "https://opt-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://mainnet.optimism.io",
+    "https://rpc.ankr.com/optimism"
+]
+ws_url = "wss://opt-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = ""
+coordinator_address = ""
+# Optimism finality depends on L1 state root publication
+confirmation_blocks = 64  # Plus L1 finality monitoring
+gas_price_strategy = "optimism"
+max_gas_price_gwei = 1
+enabled = false
+
+[chains.optimism_sepolia]
+chain_id = 11155420
+name = "Optimism Sepolia"
+rpc_urls = [
+    "https://opt-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://sepolia.optimism.io"
+]
+ws_url = "wss://opt-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = ""
+coordinator_address = ""
+confirmation_blocks = 16
+gas_price_strategy = "optimism"
+max_gas_price_gwei = 1
+enabled = true
+
+[chains.base]
+chain_id = 8453
+name = "Base Mainnet"
+rpc_urls = [
+    "https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://mainnet.base.org",
+    "https://rpc.ankr.com/base"
+]
+ws_url = "wss://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = ""
+coordinator_address = ""
+confirmation_blocks = 64  # Same as Optimism (OP Stack)
+gas_price_strategy = "optimism"
+max_gas_price_gwei = 1
+enabled = false
+
+[chains.base_sepolia]
+chain_id = 84532
+name = "Base Sepolia"
+rpc_urls = [
+    "https://base-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    "https://sepolia.base.org"
+]
+ws_url = "wss://base-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+contract_address = ""
+coordinator_address = ""
+confirmation_blocks = 16
+gas_price_strategy = "optimism"
+max_gas_price_gwei = 1
+enabled = true
+
+[chains.avalanche]
+chain_id = 43114
+name = "Avalanche C-Chain"
+rpc_urls = [
+    "https://api.avax.network/ext/bc/C/rpc",
+    "https://rpc.ankr.com/avalanche"
+]
+ws_url = "wss://api.avax.network/ext/bc/C/ws"
+contract_address = ""
+coordinator_address = ""
+confirmation_blocks = 1  # Avalanche has instant finality
+gas_price_strategy = "eip1559"
+max_gas_price_gwei = 100
+enabled = false
+
+[chains.avalanche_fuji]
+chain_id = 43113
+name = "Avalanche Fuji Testnet"
+rpc_urls = [
+    "https://api.avax-test.network/ext/bc/C/rpc",
+    "https://rpc.ankr.com/avalanche_fuji"
+]
+ws_url = "wss://api.avax-test.network/ext/bc/C/ws"
+contract_address = ""
+coordinator_address = ""
+confirmation_blocks = 1
+gas_price_strategy = "eip1559"
+max_gas_price_gwei = 50
+enabled = true
+
+# Wallet configuration
+[wallet]
+# Path to encrypted keystore file
+keystore_path = "./keystore/relayer.json"
+# Or use environment variable for private key (less secure, for dev only)
+# private_key_env = "RELAYER_PRIVATE_KEY"
+
+# Alerting configuration
+[alerts]
+# Minimum wallet balance before alerting (in ETH equivalent)
+min_balance_eth = 0.1
+
+# Slack webhook for alerts (optional)
+slack_webhook_url = ""
+
+# PagerDuty integration key (optional)
+pagerduty_key = ""

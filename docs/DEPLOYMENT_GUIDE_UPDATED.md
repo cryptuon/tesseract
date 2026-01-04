@@ -2,7 +2,16 @@
 
 ## Overview
 
-This deployment guide covers deploying TesseractBuffer.vy to local, testnet, and production environments.
+This guide covers deploying the Tesseract protocol (7 Vyper smart contracts) and the Rust relayer to testnet and production environments.
+
+### Contracts to Deploy
+1. `TesseractBuffer.vy` - Core transaction buffering
+2. `AtomicSwapCoordinator.vy` - Swap order book
+3. `TesseractToken.vy` - TESS governance token
+4. `TesseractStaking.vy` - Staking with rewards
+5. `FeeCollector.vy` - Protocol fee collection
+6. `RelayerRegistry.vy` - Relayer management
+7. `TesseractGovernor.vy` - On-chain governance
 
 ## Prerequisites
 
@@ -68,9 +77,8 @@ uv run python scripts/setup_environment.py local
 - Alchemy Faucet: https://www.alchemy.com/faucets/ethereum-sepolia
 - Amount needed: ~0.05 ETH
 
-**Polygon Mumbai:**
-- Faucet: https://mumbaifaucet.com/
-- Polygon Faucet: https://faucet.polygon.technology/
+**Polygon Amoy** (Mumbai deprecated):
+- Faucet: https://faucet.polygon.technology/
 - Amount needed: ~1 MATIC
 
 ### 2.3 Configure Environment
@@ -160,11 +168,21 @@ uv run python scripts/verify_deployment.py sepolia
 uv run python scripts/health_check.py sepolia
 ```
 
-### Deploy to Mumbai (Optional)
+### Deploy to Polygon Amoy (Optional)
 
 ```bash
-uv run python scripts/deploy_simple.py mumbai
-uv run python scripts/verify_deployment.py mumbai
+uv run python scripts/deploy_simple.py polygon_amoy
+uv run python scripts/verify_deployment.py polygon_amoy
+```
+
+### Verify on Block Explorers
+
+```bash
+# Automated verification
+uv run python scripts/verify_on_explorer.py sepolia
+
+# Verify specific contract
+uv run python scripts/verify_on_explorer.py sepolia --contract TesseractBuffer
 ```
 
 ## Step 5: Post-Deployment Operations
@@ -266,7 +284,10 @@ Network configurations are stored in `config/networks.json`:
   "networks": {
     "local": {"chain_id": 31337, "name": "Local Hardhat"},
     "sepolia": {"chain_id": 11155111, "name": "Ethereum Sepolia"},
-    "mumbai": {"chain_id": 80001, "name": "Polygon Mumbai"}
+    "polygon_amoy": {"chain_id": 80002, "name": "Polygon Amoy"},
+    "arbitrum_sepolia": {"chain_id": 421614, "name": "Arbitrum Sepolia"},
+    "optimism_sepolia": {"chain_id": 11155420, "name": "Optimism Sepolia"},
+    "base_sepolia": {"chain_id": 84532, "name": "Base Sepolia"}
   }
 }
 ```
@@ -320,4 +341,56 @@ uv run python scripts/deploy_simple.py <network>
 4. Prepare mainnet deployment plan
 5. Set up production monitoring
 
-This deployment guide covers the complete workflow from development to testnet deployment using TesseractBuffer.vy.
+## Step 8: Relayer Deployment
+
+### Build Relayer
+
+```bash
+cd relayer
+cargo build --release
+```
+
+### Configure Relayer
+
+Create `relayer/config/production.toml`:
+
+```toml
+[database]
+url = "postgres://user:pass@localhost/tesseract"
+
+[chains.sepolia]
+chain_id = 11155111
+rpc_urls = ["https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY"]
+contract_address = "0x..."  # Deployed TesseractBuffer
+confirmation_blocks = 32
+
+[relayer]
+max_retries = 3
+retry_delay_ms = 1000
+```
+
+### Run Relayer
+
+```bash
+export RELAYER_PRIVATE_KEY="0x..."
+export DATABASE_URL="postgres://..."
+cargo run --release
+```
+
+### Deploy to AWS (Production)
+
+```bash
+cd infrastructure/terraform
+
+# Initialize
+terraform init -backend-config=environments/production/backend.tf
+
+# Deploy
+terraform apply -var-file=environments/production/terraform.tfvars
+```
+
+See `infrastructure/terraform/README.md` and `relayer/README.md` for detailed relayer deployment instructions.
+
+---
+
+This deployment guide covers the complete workflow from development to production deployment of the Tesseract protocol.
