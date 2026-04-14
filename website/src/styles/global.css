@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 99 102 241;
+    --color-secondary: 20 184 166;
+    --color-accent: 245 158 11;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-gray-900 antialiased;
+  }
+
+  .dark body {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
+@layer components {
+  /* Quick Answer Box - GEO optimized */
+  .quick-answer {
+    @apply bg-primary-50 dark:bg-primary-950/50 border-l-4 border-primary-500 p-6 rounded-r-lg mb-8;
+  }
+
+  .quick-answer p {
+    @apply text-lg leading-relaxed text-gray-700 dark:text-gray-300 m-0;
+  }
+
+  /* Key Facts Box - AI extractable */
+  .key-facts {
+    @apply bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-6 mb-8;
+  }
+
+  .key-facts ul {
+    @apply list-none p-0 m-0 space-y-3;
+  }
+
+  .key-facts li {
+    @apply flex items-start gap-3 text-gray-700 dark:text-gray-300;
+  }
+
+  .key-facts li::before {
+    content: "";
+    @apply w-2 h-2 bg-secondary-500 rounded-full mt-2 flex-shrink-0;
+  }
+
+  /* FAQ Section - Schema optimized */
+  .faq-section {
+    @apply space-y-4;
+  }
+
+  .faq-item {
+    @apply border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden;
+  }
+
+  .faq-question {
+    @apply w-full text-left px-6 py-4 bg-gray-50 dark:bg-gray-800 font-medium text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors;
+  }
+
+  .faq-answer {
+    @apply px-6 py-4 text-gray-600 dark:text-gray-400;
+  }
+
+  /* Comparison Table */
+  .comparison-table {
+    @apply w-full border-collapse;
+  }
+
+  .comparison-table th {
+    @apply bg-gray-100 dark:bg-gray-800 px-4 py-3 text-left font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700;
+  }
+
+  .comparison-table td {
+    @apply px-4 py-3 border-b border-gray-100 dark:border-gray-800;
+  }
+
+  .comparison-table tr:hover td {
+    @apply bg-gray-50 dark:bg-gray-800/50;
+  }
+
+  /* Button Styles */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-secondary-600 hover:bg-secondary-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-6 py-3 border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  /* Card Styles */
+  .card {
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow;
+  }
+
+  .card-feature {
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:border-primary-500 dark:hover:border-primary-500 transition-colors;
+  }
+
+  /* Code Blocks */
+  .code-block {
+    @apply bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto text-sm font-mono;
+  }
+
+  /* Status Indicators */
+  .status-healthy {
+    @apply inline-flex items-center gap-1.5 text-green-600 dark:text-green-400;
+  }
+
+  .status-healthy::before {
+    content: "";
+    @apply w-2 h-2 bg-green-500 rounded-full animate-pulse;
+  }
+
+  .status-unhealthy {
+    @apply inline-flex items-center gap-1.5 text-red-600 dark:text-red-400;
+  }
+
+  .status-unhealthy::before {
+    content: "";
+    @apply w-2 h-2 bg-red-500 rounded-full;
+  }
+
+  /* Chain Badge */
+  .chain-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-sm font-medium;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-600 to-secondary-500 bg-clip-text text-transparent;
+  }
+
+  .bg-gradient-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-700;
+  }
+
+  .bg-gradient-mesh {
+    background-image:
+      radial-gradient(at 40% 20%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(20, 184, 166, 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(99, 102, 241, 0.05) 0px, transparent 50%);
+  }
+}

@@ -1,0 +1,160 @@
+---
+// Supported Networks section
+
+const networks = [
+  {
+    name: "Ethereum",
+    shortName: "ETH",
+    chainId: 1,
+    testnetChainId: 11155111,
+    testnetName: "Sepolia",
+    color: "#627EEA",
+    status: "live",
+  },
+  {
+    name: "Polygon",
+    shortName: "MATIC",
+    chainId: 137,
+    testnetChainId: 80002,
+    testnetName: "Amoy",
+    color: "#8247E5",
+    status: "live",
+  },
+  {
+    name: "Arbitrum",
+    shortName: "ARB",
+    chainId: 42161,
+    testnetChainId: 421614,
+    testnetName: "Sepolia",
+    color: "#28A0F0",
+    status: "live",
+  },
+  {
+    name: "Optimism",
+    shortName: "OP",
+    chainId: 10,
+    testnetChainId: 11155420,
+    testnetName: "Sepolia",
+    color: "#FF0420",
+    status: "live",
+  },
+  {
+    name: "Base",
+    shortName: "BASE",
+    chainId: 8453,
+    testnetChainId: 84532,
+    testnetName: "Sepolia",
+    color: "#0052FF",
+    status: "live",
+  },
+];
+---
+
+<section class="py-20 bg-gray-50 dark:bg-gray-800/50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-12">
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        Which Networks Does Tesseract Support?
+      </h2>
+      <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        Tesseract enables atomic swaps across 5 major Ethereum L2 networks.
+        All networks use identical contract code for consistent security guarantees.
+      </p>
+    </div>
+
+    <!-- Networks Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      {networks.map((network) => (
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 text-center hover:border-primary-500 dark:hover:border-primary-500 transition-colors group">
+          <!-- Network Icon -->
+          <div
+            class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center text-white font-bold text-xl"
+            style={`background-color: ${network.color}`}
+          >
+            {network.shortName.slice(0, 3)}
+          </div>
+
+          <!-- Network Name -->
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+            {network.name}
+          </h3>
+
+          <!-- Status Badge -->
+          <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-full text-xs font-medium text-green-700 dark:text-green-300">
+            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+            Live
+          </div>
+
+          <!-- Chain IDs -->
+          <div class="mt-4 text-xs text-gray-500 dark:text-gray-400 space-y-1">
+            <div>Mainnet: {network.chainId}</div>
+            <div>{network.testnetName}: {network.testnetChainId}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Cross-Chain Diagram -->
+    <div class="mt-16 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-8">
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
+        How Cross-Chain Swaps Work
+      </h3>
+
+      <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+        <!-- Source Chain -->
+        <div class="text-center">
+          <div class="w-20 h-20 mx-auto mb-3 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center">
+            <svg class="w-10 h-10 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="font-medium text-gray-900 dark:text-white">Source Chain</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">Commit + Lock</div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="flex items-center">
+          <svg class="w-16 h-8 text-secondary-500 rotate-90 md:rotate-0" fill="none" viewBox="0 0 64 24" stroke="currentColor" stroke-width="2">
+            <path d="M4 12h52M48 6l8 6-8 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+
+        <!-- Tesseract -->
+        <div class="text-center">
+          <div class="w-20 h-20 mx-auto mb-3 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center">
+            <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          <div class="font-medium text-gray-900 dark:text-white">Tesseract</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">Coordinate + Verify</div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="flex items-center">
+          <svg class="w-16 h-8 text-secondary-500 rotate-90 md:rotate-0" fill="none" viewBox="0 0 64 24" stroke="currentColor" stroke-width="2">
+            <path d="M4 12h52M48 6l8 6-8 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+
+        <!-- Target Chain -->
+        <div class="text-center">
+          <div class="w-20 h-20 mx-auto mb-3 bg-secondary-100 dark:bg-secondary-900/30 rounded-2xl flex items-center justify-center">
+            <svg class="w-10 h-10 text-secondary-600 dark:text-secondary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="font-medium text-gray-900 dark:text-white">Target Chain</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">Execute + Deliver</div>
+        </div>
+      </div>
+
+      <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-8">
+        All swaps are coordinated by the Tesseract relayer network with cryptographic proof verification.
+      </p>
+    </div>
+  </div>
+</section>

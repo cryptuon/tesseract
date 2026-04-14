@@ -1,0 +1,114 @@
+# Tesseract Relayer - Demo Configuration
+# Uses public RPC endpoints (no API keys required)
+
+[relayer]
+instance_id = "tesseract-demo"
+poll_interval_ms = 2000
+max_concurrent_txs = 5
+max_retries = 3
+retry_delay_ms = 5000
+health_check_interval_secs = 30
+
+[database]
+url = "postgres://tesseract:tesseract@postgres:5432/tesseract_relayer"
+max_connections = 5
+min_connections = 1
+
+[api]
+host = "0.0.0.0"
+port = 8080
+
+[metrics]
+enabled = true
+port = 9090
+
+# Ethereum Sepolia - Primary demo chain
+[chains.sepolia]
+chain_id = 11155111
+name = "Sepolia Testnet"
+rpc_urls = [
+    "https://rpc.sepolia.org",
+    "https://ethereum-sepolia-rpc.publicnode.com",
+    "https://1rpc.io/sepolia",
+    "https://sepolia.gateway.tenderly.co"
+]
+ws_url = ""  # No WebSocket, use HTTP polling
+contract_address = "${TESSERACT_BUFFER_ADDRESS}"
+coordinator_address = "${COORDINATOR_ADDRESS}"
+confirmation_blocks = 3  # Faster for demo
+gas_price_strategy = "eip1559"
+max_gas_price_gwei = 50
+enabled = true
+
+# Polygon Amoy Testnet
+[chains.polygon_amoy]
+chain_id = 80002
+name = "Polygon Amoy"
+rpc_urls = [
+    "https://rpc-amoy.polygon.technology",
+    "https://polygon-amoy-bor-rpc.publicnode.com"
+]
+ws_url = ""
+contract_address = "${TESSERACT_BUFFER_ADDRESS}"
+coordinator_address = "${COORDINATOR_ADDRESS}"
+confirmation_blocks = 5
+gas_price_strategy = "eip1559"
+max_gas_price_gwei = 100
+enabled = false  # Enable after deploying contracts
+
+# Arbitrum Sepolia
+[chains.arbitrum_sepolia]
+chain_id = 421614
+name = "Arbitrum Sepolia"
+rpc_urls = [
+    "https://sepolia-rollup.arbitrum.io/rpc",
+    "https://arbitrum-sepolia-rpc.publicnode.com"
+]
+ws_url = ""
+contract_address = "${TESSERACT_BUFFER_ADDRESS}"
+coordinator_address = "${COORDINATOR_ADDRESS}"
+confirmation_blocks = 3
+gas_price_strategy = "arbitrum"
+max_gas_price_gwei = 1
+enabled = false
+
+# Optimism Sepolia
+[chains.optimism_sepolia]
+chain_id = 11155420
+name = "Optimism Sepolia"
+rpc_urls = [
+    "https://sepolia.optimism.io",
+    "https://optimism-sepolia-rpc.publicnode.com"
+]
+ws_url = ""
+contract_address = "${TESSERACT_BUFFER_ADDRESS}"
+coordinator_address = "${COORDINATOR_ADDRESS}"
+confirmation_blocks = 3
+gas_price_strategy = "optimism"
+max_gas_price_gwei = 1
+enabled = false
+
+# Base Sepolia
+[chains.base_sepolia]
+chain_id = 84532
+name = "Base Sepolia"
+rpc_urls = [
+    "https://sepolia.base.org",
+    "https://base-sepolia-rpc.publicnode.com"
+]
+ws_url = ""
+contract_address = "${TESSERACT_BUFFER_ADDRESS}"
+coordinator_address = "${COORDINATOR_ADDRESS}"
+confirmation_blocks = 3
+gas_price_strategy = "optimism"
+max_gas_price_gwei = 1
+enabled = false
+
+[wallet]
+# Use environment variable for private key (for demo/dev)
+private_key_env = "RELAYER_PRIVATE_KEY"
+
+[alerts]
+min_balance_eth = 0.01
+slack_webhook_url = ""
+pagerduty_key = ""

@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/landing/Hero.astro';
+import Features from '../components/landing/Features.astro';
+import HowItWorks from '../components/landing/HowItWorks.astro';
+import Networks from '../components/landing/Networks.astro';
+import FAQ from '../components/landing/FAQ.astro';
+---
+
+<BaseLayout
+  title="Cross-Rollup Atomic Swaps"
+  description="Tesseract is a trustless cross-rollup atomic swap protocol for Ethereum L2s. Swap tokens across Ethereum, Polygon, Arbitrum, Optimism, and Base with MEV protection and flash loan resistance."
+  keywords={[
+    "cross-rollup atomic swaps",
+    "Tesseract protocol",
+    "MEV protection",
+    "flash loan resistance",
+    "L2 swaps",
+    "cross-chain DeFi",
+    "Ethereum bridges alternative",
+    "atomic swap groups",
+    "TESS token",
+    "commit-reveal pattern"
+  ]}
+  jsonLdType="software"
+>
+  <Hero />
+  <Features />
+  <HowItWorks />
+  <Networks />
+
+  <!-- Call to Action -->
+  <section class="py-20 bg-gradient-to-r from-primary-600 to-primary-700">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+        Ready to Start Swapping?
+      </h2>
+      <p class="text-xl text-primary-100 mb-8">
+        Connect to the live dashboard and experience cross-rollup atomic swaps.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="/dashboard" class="btn-secondary text-lg px-8 py-4">
+          Launch Dashboard
+        </a>
+        <a href="/docs/getting-started" class="text-white font-medium hover:underline">
+          Read Getting Started Guide
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <FAQ />
+</BaseLayout>

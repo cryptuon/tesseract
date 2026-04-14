@@ -1,0 +1,105 @@
+---
+interface Props {
+  type: 'website' | 'article' | 'faq' | 'software' | 'howto';
+  data?: Record<string, any>;
+}
+
+const { type, data = {} } = Astro.props;
+
+// Base organization schema
+const organization = {
+  "@type": "Organization",
+  "name": "Tesseract Protocol",
+  "url": "https://tesseract.io",
+  "logo": "https://tesseract.io/images/tesseract-logo.svg",
+  "sameAs": [
+    "https://twitter.com/tesseractproto",
+    "https://github.com/tesseract-protocol",
+    "https://discord.gg/tesseract"
+  ]
+};
+
+// Software Application schema for landing/product pages
+const softwareApplication = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Tesseract Protocol",
+  "applicationCategory": "DeFi Protocol",
+  "operatingSystem": "Ethereum, Polygon, Arbitrum, Optimism, Base",
+  "description": "Cross-rollup atomic swap protocol with MEV protection and flash loan resistance for trustless token exchanges across Ethereum L2s.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Commit-reveal-resolve pattern for MEV protection",
+    "Flash loan resistance with 2-block minimum delay",
+    "Atomic swap groups supporting up to 4 legs",
+    "60% fee share to TESS stakers",
+    "0.2% protocol fee with 50% discount for stakers"
+  ],
+  "provider": organization
+};
+
+// Website schema
+const website = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Tesseract Protocol",
+  "url": "https://tesseract.io",
+  "description": "Cross-rollup atomic swap protocol for Ethereum L2s",
+  "publisher": organization,
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://tesseract.io/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+};
+
+// Build schema based on type
+let schema: Record<string, any>;
+
+switch (type) {
+  case 'software':
+    schema = softwareApplication;
+    break;
+  case 'website':
+    schema = website;
+    break;
+  case 'article':
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "publisher": organization,
+      ...data
+    };
+    break;
+  case 'faq':
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": data.questions?.map((q: { question: string; answer: string }) => ({
+        "@type": "Question",
+        "name": q.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": q.answer
+        }
+      })) || []
+    };
+    break;
+  case 'howto':
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "publisher": organization,
+      ...data
+    };
+    break;
+  default:
+    schema = website;
+}
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

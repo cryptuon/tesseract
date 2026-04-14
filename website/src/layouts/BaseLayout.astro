@@ -1,0 +1,79 @@
+---
+import '../styles/global.css';
+import SEO from '../components/common/SEO.astro';
+import JsonLd from '../components/common/JsonLd.astro';
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  article?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  keywords?: string[];
+  jsonLdType?: 'website' | 'article' | 'faq' | 'software' | 'howto';
+  jsonLdData?: Record<string, any>;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  article,
+  publishedTime,
+  modifiedTime,
+  keywords,
+  jsonLdType = 'website',
+  jsonLdData,
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <SEO
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      article={article}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      keywords={keywords}
+    />
+
+    <JsonLd type={jsonLdType} data={jsonLdData} />
+  </head>
+  <body class="min-h-screen flex flex-col bg-white dark:bg-gray-900">
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+
+    <!-- Dark mode script -->
+    <script is:inline>
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
+  </body>
+</html>
