@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const comparisons = [
+  {
+    title: "Tesseract vs Cross-Chain Bridges",
+    description: "Compare Tesseract atomic swaps to bridge protocols like LayerZero, Wormhole, and Axelar.",
+    href: "/compare/vs-bridges",
+    icon: "bridge",
+  },
+  {
+    title: "Tesseract vs Cross-Chain DEXs",
+    description: "Compare Tesseract to cross-chain DEX solutions like Uniswap X and 1inch cross-chain.",
+    href: "/compare/vs-dexs",
+    icon: "exchange",
+  },
+];
+---
+
+<BaseLayout
+  title="Compare Tesseract"
+  description="Compare Tesseract Protocol to other cross-chain solutions including bridges (LayerZero, Wormhole, Axelar) and cross-chain DEXs (Uniswap X, 1inch)."
+  keywords={[
+    "Tesseract comparison",
+    "atomic swap vs bridge",
+    "cross-chain comparison",
+    "LayerZero alternative",
+    "Wormhole alternative"
+  ]}
+>
+  <div class="bg-white dark:bg-gray-900 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          Compare Tesseract Protocol
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300">
+          See how Tesseract's atomic swap approach compares to other cross-chain solutions.
+        </p>
+      </div>
+
+      <!-- Quick Answer Box -->
+      <div class="quick-answer mb-12">
+        <p>
+          <strong>Quick Answer:</strong> Tesseract differs from bridges and cross-chain DEXs by using
+          direct atomic swaps without wrapped tokens. Key advantages include MEV protection via
+          commit-reveal, flash loan resistance through 2-block delays, and atomic swap groups
+          supporting up to 4 legs. The 0.2% fee is competitive with bridges while offering
+          superior security guarantees.
+        </p>
+      </div>
+
+      <!-- Comparison Cards -->
+      <div class="grid md:grid-cols-2 gap-6">
+        {comparisons.map((comparison) => (
+          <a
+            href={comparison.href}
+            class="card-feature group"
+          >
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                  {comparison.title}
+                </h2>
+                <p class="text-gray-600 dark:text-gray-400">
+                  {comparison.description}
+                </p>
+                <span class="inline-flex items-center gap-1 mt-4 text-primary-600 dark:text-primary-400 font-medium">
+                  Read comparison
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <!-- Summary Table -->
+      <div class="mt-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+          Quick Comparison Summary
+        </h2>
+
+        <div class="overflow-x-auto">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Tesseract</th>
+                <th>Bridges</th>
+                <th>Cross-Chain DEXs</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Architecture</td>
+                <td>Atomic Swaps</td>
+                <td>Message Passing / Lock-Mint</td>
+                <td>AMM / RFQ</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Wrapped Tokens</td>
+                <td class="text-green-600 dark:text-green-400">No</td>
+                <td class="text-red-600 dark:text-red-400">Yes</td>
+                <td>Sometimes</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">MEV Protection</td>
+                <td class="text-green-600 dark:text-green-400">Commit-Reveal</td>
+                <td class="text-red-600 dark:text-red-400">None</td>
+                <td>Varies</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Flash Loan Resistant</td>
+                <td class="text-green-600 dark:text-green-400">2-Block Delay</td>
+                <td class="text-red-600 dark:text-red-400">No</td>
+                <td class="text-red-600 dark:text-red-400">No</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Atomic Groups</td>
+                <td class="text-green-600 dark:text-green-400">Up to 4 Legs</td>
+                <td class="text-red-600 dark:text-red-400">No</td>
+                <td class="text-red-600 dark:text-red-400">No</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Typical Fees</td>
+                <td>0.2%</td>
+                <td>0.1-0.3%</td>
+                <td>0.3-1%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LiveDashboard from '../components/vue/dashboard/LiveDashboard.vue';
+---
+
+<BaseLayout
+  title="Live Dashboard"
+  description="Monitor Tesseract relayer status, chain health, and cross-rollup transaction activity in real-time. View live statistics from the Tesseract network."
+  keywords={[
+    "Tesseract dashboard",
+    "cross-chain monitor",
+    "relayer status",
+    "L2 transaction stats",
+    "atomic swap dashboard"
+  ]}
+>
+  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Page Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          Live Dashboard
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400">
+          Real-time monitoring of Tesseract relayer and cross-chain activity.
+        </p>
+      </div>
+
+      <!-- Dashboard Component (Vue Island) -->
+      <LiveDashboard client:load />
+
+      <!-- Info Cards -->
+      <div class="mt-12 grid md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            What is this dashboard?
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            This dashboard connects to a live Tesseract relayer node and displays
+            real-time statistics about cross-chain atomic swap activity.
+          </p>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Transaction States
+          </h3>
+          <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+            <li><span class="font-medium">Buffered:</span> Waiting in queue</li>
+            <li><span class="font-medium">Ready:</span> Dependencies resolved</li>
+            <li><span class="font-medium">Submitted:</span> Sent to chain</li>
+            <li><span class="font-medium">Finalized:</span> Confirmed on-chain</li>
+          </ul>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Network Status
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Currently connected to public testnets: Sepolia, Amoy, Arbitrum Sepolia,
+            Optimism Sepolia, and Base Sepolia.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

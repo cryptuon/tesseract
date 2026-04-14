@@ -1,0 +1,315 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const faqs = [
+  {
+    question: "Is Tesseract faster than bridges?",
+    answer: "Tesseract swaps typically complete in 2-5 minutes depending on block finality. This is comparable to fast bridges but with superior security guarantees. The 2-block delay for flash loan protection adds minimal time but prevents attacks.",
+  },
+  {
+    question: "Are Tesseract fees higher than bridges?",
+    answer: "Tesseract's 0.2% default fee is competitive with major bridges (LayerZero 0.1-0.3%, Wormhole ~0.1%, Axelar ~0.15%). TESS stakers get a 50% discount, making effective fees as low as 0.1%.",
+  },
+  {
+    question: "Can I use Tesseract for any token?",
+    answer: "Tesseract supports any ERC-20 token on supported networks. Unlike bridges that require liquidity provisioning, Tesseract uses direct swaps between counterparties with slippage protection via min_receive_amount.",
+  },
+  {
+    question: "Why don't bridges have MEV protection?",
+    answer: "Bridges use transparent message passing where transaction details are visible immediately. This makes front-running possible. Tesseract's commit-reveal pattern hides swap details until after commitment, eliminating MEV extraction.",
+  },
+  {
+    question: "What happens if a bridge gets hacked?",
+    answer: "Bridge hacks (Wormhole $320M, Ronin $625M) result from compromised validators or smart contract exploits. Tesseract's non-custodial atomic swaps mean no pooled funds to steal—assets transfer directly between users.",
+  },
+  {
+    question: "Do bridges support atomic multi-leg swaps?",
+    answer: "No. Bridges handle single-direction transfers. Tesseract's atomic swap groups allow up to 4 legs to execute together or revert together, enabling complex arbitrage and routing strategies safely.",
+  },
+];
+---
+
+<BaseLayout
+  title="Tesseract vs Cross-Chain Bridges"
+  description="Compare Tesseract atomic swaps to bridge protocols like LayerZero, Wormhole, and Axelar. Learn why atomic swaps offer superior MEV protection and flash loan resistance."
+  keywords={[
+    "Tesseract vs LayerZero",
+    "Tesseract vs Wormhole",
+    "Tesseract vs Axelar",
+    "atomic swap vs bridge",
+    "cross-chain comparison",
+    "bridge alternative",
+    "MEV protection cross-chain"
+  ]}
+  jsonLdType="faq"
+  jsonLdData={{ questions: faqs }}
+>
+  <div class="bg-white dark:bg-gray-900">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <!-- Breadcrumb -->
+      <nav class="mb-8 text-sm">
+        <ol class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+          <li><a href="/" class="hover:text-primary-600">Home</a></li>
+          <li>/</li>
+          <li><a href="/compare" class="hover:text-primary-600">Compare</a></li>
+          <li>/</li>
+          <li class="text-gray-900 dark:text-white">vs Bridges</li>
+        </ol>
+      </nav>
+
+      <!-- Header -->
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        Tesseract vs Cross-Chain Bridges: Complete Comparison
+      </h1>
+
+      <!-- Last Updated -->
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-8">
+        Last updated: April 15, 2026
+      </p>
+
+      <!-- Quick Answer (GEO Optimized - 60 words) -->
+      <div class="quick-answer">
+        <p>
+          Unlike bridges (LayerZero, Wormhole, Axelar) that use wrapped tokens and
+          liquidity pools, Tesseract enables direct atomic swaps with no intermediary
+          assets. Tesseract provides MEV protection via commit-reveal and flash loan
+          resistance through 2-block delays—features no bridge currently offers.
+          Fees are competitive at 0.2% with a 50% staker discount.
+        </p>
+      </div>
+
+      <!-- Key Facts -->
+      <div class="key-facts">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Key Differences at a Glance</h2>
+        <ul>
+          <li>Tesseract uses direct atomic swaps; bridges use wrapped tokens</li>
+          <li>Tesseract has commit-reveal MEV protection; bridges have none</li>
+          <li>Tesseract requires 2-block delay for flash loan resistance</li>
+          <li>Tesseract supports 4-leg atomic swap groups</li>
+          <li>Both have similar fees (~0.2%) but different security models</li>
+        </ul>
+      </div>
+
+      <!-- Comparison Table -->
+      <section class="my-12">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          Feature Comparison Table
+        </h2>
+
+        <div class="overflow-x-auto">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th class="bg-primary-50 dark:bg-primary-900/30">Tesseract</th>
+                <th>LayerZero</th>
+                <th>Wormhole</th>
+                <th>Axelar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Architecture</td>
+                <td class="bg-primary-50/50 dark:bg-primary-900/20">Atomic Swaps</td>
+                <td>Message Passing</td>
+                <td>Guardian Network</td>
+                <td>Validator Network</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Wrapped Tokens</td>
+                <td class="bg-primary-50/50 dark:bg-primary-900/20 text-green-600 dark:text-green-400 font-medium">No</td>
+                <td class="text-red-600 dark:text-red-400">Yes</td>
+                <td class="text-red-600 dark:text-red-400">Yes</td>
+                <td class="text-red-600 dark:text-red-400">Yes</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">MEV Protection</td>
+                <td class="bg-primary-50/50 dark:bg-primary-900/20 text-green-600 dark:text-green-400 font-medium">Commit-Reveal</td>
+                <td class="text-red-600 dark:text-red-400">None</td>
+                <td class="text-red-600 dark:text-red-400">None</td>
+                <td class="text-red-600 dark:text-red-400">None</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Flash Loan Resistant</td>
+                <td class="bg-primary-50/50 dark:bg-primary-900/20 text-green-600 dark:text-green-400 font-medium">2-Block Delay</td>
+                <td class="text-red-600 dark:text-red-400">No</td>
+                <td class="text-red-600 dark:text-red-400">No</td>
+                <td class="text-red-600 dark:text-red-400">No</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Atomic Groups</td>
+                <td class="bg-primary-50/50 dark:bg-primary-900/20 text-green-600 dark:text-green-400 font-medium">Up to 4 Legs</td>
+                <td class="text-red-600 dark:text-red-400">No</td>
+                <td class="text-red-600 dark:text-red-400">No</td>
+                <td class="text-red-600 dark:text-red-400">No</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Typical Fees</td>
+                <td class="bg-primary-50/50 dark:bg-primary-900/20">0.2%</td>
+                <td>0.1-0.3%</td>
+                <td>~0.1%</td>
+                <td>~0.15%</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Trust Model</td>
+                <td class="bg-primary-50/50 dark:bg-primary-900/20">Smart Contracts Only</td>
+                <td>Oracles (DVNs)</td>
+                <td>19 Guardians</td>
+                <td>Validator Set</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Networks</td>
+                <td class="bg-primary-50/50 dark:bg-primary-900/20">5 L2s</td>
+                <td>50+</td>
+                <td>30+</td>
+                <td>40+</td>
+              </tr>
+              <tr>
+                <td class="font-medium text-gray-900 dark:text-white">Token Requirements</td>
+                <td class="bg-primary-50/50 dark:bg-primary-900/20">TESS (optional, for discounts)</td>
+                <td>ZRO (optional)</td>
+                <td>None</td>
+                <td>AXL (for fees)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Detailed Sections -->
+      <section class="prose prose-gray dark:prose-invert max-w-none">
+        <h2>How Is Tesseract Different from Bridges?</h2>
+
+        <p>
+          The fundamental difference is architectural: bridges transfer value across chains
+          using a lock-mint model (lock on source, mint wrapped token on destination),
+          while Tesseract coordinates atomic swaps between counterparties directly.
+        </p>
+
+        <h3>Bridge Architecture (Lock-Mint)</h3>
+        <ol>
+          <li>User locks tokens in source chain contract</li>
+          <li>Bridge validators/guardians observe the lock</li>
+          <li>Validators sign attestation message</li>
+          <li>Destination contract mints equivalent wrapped tokens</li>
+          <li>User receives wrapped tokens (e.g., WETH.e, wUSDC)</li>
+        </ol>
+
+        <h3>Tesseract Architecture (Atomic Swaps)</h3>
+        <ol>
+          <li>User commits swap intent (hash only, details hidden)</li>
+          <li>After confirmation, user reveals swap details</li>
+          <li>After 2-block delay, relayer resolves dependencies</li>
+          <li>Atomic execution: tokens transfer directly between users</li>
+          <li>User receives native tokens, not wrapped</li>
+        </ol>
+
+        <h2>When Should I Use Tesseract vs a Bridge?</h2>
+
+        <p><strong>Use Tesseract when:</strong></p>
+        <ul>
+          <li>You want native tokens, not wrapped representations</li>
+          <li>MEV protection is important (large swaps, market-moving trades)</li>
+          <li>You need atomic multi-leg swaps (arbitrage, complex routing)</li>
+          <li>You're concerned about bridge security (no pooled funds to hack)</li>
+        </ul>
+
+        <p><strong>Use a bridge when:</strong></p>
+        <ul>
+          <li>You need access to chains Tesseract doesn't support yet</li>
+          <li>You're transferring to non-EVM chains</li>
+          <li>You need the fastest possible transfer (some bridges are faster)</li>
+          <li>Liquidity for your token pair isn't available on Tesseract</li>
+        </ul>
+
+        <h2>What Are the Security Trade-offs?</h2>
+
+        <h3>Bridge Security Risks</h3>
+        <ul>
+          <li><strong>Validator Compromise:</strong> If enough validators are compromised, arbitrary minting is possible (Ronin $625M hack)</li>
+          <li><strong>Smart Contract Exploits:</strong> Bugs in bridge contracts can drain locked funds (Wormhole $320M hack)</li>
+          <li><strong>Wrapped Token Risk:</strong> Wrapped tokens are only valuable if backed 1:1; de-pegs can occur</li>
+        </ul>
+
+        <h3>Tesseract Security Guarantees</h3>
+        <ul>
+          <li><strong>No Pooled Funds:</strong> Tokens transfer directly between users; no TVL to steal</li>
+          <li><strong>Atomic Execution:</strong> Swaps complete fully or revert fully; no partial states</li>
+          <li><strong>MEV Protection:</strong> Commit-reveal prevents front-running and sandwich attacks</li>
+          <li><strong>Flash Loan Resistance:</strong> 2-block delay prevents single-block manipulation</li>
+        </ul>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="mt-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          Frequently Asked Questions
+        </h2>
+
+        <div class="faq-section">
+          {faqs.map((faq, index) => (
+            <div class="faq-item" data-faq-index={index}>
+              <button
+                class="faq-question flex items-center justify-between w-full"
+                aria-expanded="false"
+                data-faq-toggle
+              >
+                <span class="text-left pr-4">{faq.question}</span>
+                <svg class="w-5 h-5 flex-shrink-0 transform transition-transform faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div class="faq-answer hidden" data-faq-content>
+                <p>{faq.answer}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="mt-16 bg-primary-50 dark:bg-primary-900/20 rounded-2xl p-8 text-center">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          Ready to Try Tesseract?
+        </h2>
+        <p class="text-gray-600 dark:text-gray-300 mb-6">
+          Experience trustless cross-rollup atomic swaps with MEV protection.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="/dashboard" class="btn-primary">
+            Launch Dashboard
+          </a>
+          <a href="/docs/how-it-works" class="btn-outline">
+            Learn How It Works
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('[data-faq-toggle]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const item = button.closest('[data-faq-index]');
+        const content = item?.querySelector('[data-faq-content]');
+        const icon = item?.querySelector('.faq-icon');
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+        document.querySelectorAll('[data-faq-index]').forEach((otherItem) => {
+          if (otherItem !== item) {
+            const otherButton = otherItem.querySelector('[data-faq-toggle]');
+            const otherContent = otherItem.querySelector('[data-faq-content]');
+            const otherIcon = otherItem.querySelector('.faq-icon');
+            otherButton?.setAttribute('aria-expanded', 'false');
+            otherContent?.classList.add('hidden');
+            otherIcon?.classList.remove('rotate-180');
+          }
+        });
+
+        button.setAttribute('aria-expanded', String(!isExpanded));
+        content?.classList.toggle('hidden');
+        icon?.classList.toggle('rotate-180');
+      });
+    });
+  </script>
+</BaseLayout>

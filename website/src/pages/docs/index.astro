@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const docSections = [
+  {
+    title: "Getting Started",
+    description: "Learn how to use Tesseract for cross-rollup swaps",
+    href: "/docs/getting-started",
+    icon: "rocket",
+  },
+  {
+    title: "How It Works",
+    description: "Understand the commit-reveal-resolve pattern",
+    href: "/docs/how-it-works",
+    icon: "cog",
+  },
+  {
+    title: "Security Model",
+    description: "MEV protection and flash loan resistance",
+    href: "/docs/security",
+    icon: "shield",
+  },
+  {
+    title: "Smart Contracts",
+    description: "Contract interfaces and deployment addresses",
+    href: "/docs/smart-contracts",
+    icon: "code",
+  },
+];
+---
+
+<BaseLayout
+  title="Documentation"
+  description="Tesseract Protocol documentation. Learn about cross-rollup atomic swaps, MEV protection, smart contracts, and integration guides."
+  keywords={[
+    "Tesseract documentation",
+    "cross-rollup docs",
+    "atomic swap guide",
+    "DeFi documentation"
+  ]}
+>
+  <div class="bg-white dark:bg-gray-900 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          Documentation
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300">
+          Everything you need to understand and integrate Tesseract Protocol.
+        </p>
+      </div>
+
+      <!-- Quick Answer -->
+      <div class="quick-answer mb-12">
+        <p>
+          <strong>Quick Start:</strong> Tesseract is a cross-rollup atomic swap protocol
+          for Ethereum L2s. Connect your wallet to the dashboard, create a swap order,
+          and the protocol handles atomic execution with MEV protection via commit-reveal
+          and flash loan resistance via 2-block delays.
+        </p>
+      </div>
+
+      <!-- Doc Sections -->
+      <div class="grid md:grid-cols-2 gap-6">
+        {docSections.map((section) => (
+          <a href={section.href} class="card-feature group">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                  {section.title}
+                </h2>
+                <p class="text-gray-600 dark:text-gray-400">
+                  {section.description}
+                </p>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <!-- Developer Resources -->
+      <div class="mt-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          Developer Resources
+        </h2>
+        <div class="grid md:grid-cols-3 gap-4">
+          <a href="/developers/api-reference" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">API Reference</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">REST API endpoints</p>
+          </a>
+          <a href="/developers/integration-guide" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Integration Guide</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Smart contract integration</p>
+          </a>
+          <a href="https://github.com/tesseract-protocol" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">GitHub</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Source code & examples</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

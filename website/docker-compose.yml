@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # Static website served by Nginx
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PUBLIC_API_URL: /api
+    ports:
+      - "80:80"
+    depends_on:
+      relayer:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - tesseract
+
+  # Tesseract Relayer
+  relayer:
+    build:
+      context: ..
+      dockerfile: relayer/Dockerfile
+    environment:
+      - TESSERACT_CONFIG=/app/config/demo.toml
+      - DATABASE_URL=postgres://tesseract:${POSTGRES_PASSWORD:-tesseract}@postgres:5432/tesseract_relayer
+      - RELAYER_PRIVATE_KEY=${RELAYER_PRIVATE_KEY}
+      - TESSERACT_BUFFER_ADDRESS=${TESSERACT_BUFFER_ADDRESS}
+      - COORDINATOR_ADDRESS=${COORDINATOR_ADDRESS}
+      - RUST_LOG=info,tesseract_relayer=debug
+    volumes:
+      - ./relayer-config/demo.toml:/app/config/demo.toml:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - tesseract
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=tesseract
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-tesseract}
+      - POSTGRES_DB=tesseract_relayer
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tesseract -d tesseract_relayer"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - tesseract
+
+volumes:
+  postgres_data:
+
+networks:
+  tesseract:
+    driver: bridge

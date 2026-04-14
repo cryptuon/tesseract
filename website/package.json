@@ -1,0 +1,39 @@
+{
+  "name": "tesseract-website",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Tesseract Protocol - Cross-Rollup Atomic Swaps Marketing Website",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.7.13",
+    "@astrojs/vue": "^5.0.6",
+    "@astrojs/tailwind": "^6.0.2",
+    "@astrojs/sitemap": "^3.3.1",
+    "@astrojs/mdx": "^4.2.6",
+    "vue": "^3.5.13",
+    "tailwindcss": "^3.4.17",
+    "@tailwindcss/typography": "^0.5.16",
+    "viem": "^2.23.13",
+    "@wagmi/core": "^2.16.7",
+    "@wagmi/connectors": "^5.7.12",
+    "chart.js": "^4.4.9",
+    "vue-chartjs": "^5.3.2",
+    "@headlessui/vue": "^1.7.23",
+    "@heroicons/vue": "^2.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "@types/node": "^22.15.18",
+    "prettier": "^3.5.3",
+    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-tailwindcss": "^0.6.11"
+  }
+}

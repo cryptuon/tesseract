@@ -1,0 +1,163 @@
+---
+// How It Works section - 3-step visual with GEO optimization
+
+const steps = [
+  {
+    number: "01",
+    title: "Commit",
+    subtitle: "Hide Your Intent",
+    description: "Submit a cryptographic commitment hash of your transaction. Only the hash is visible on-chain, keeping your swap details hidden from MEV bots.",
+    details: [
+      "Transaction payload is hashed with a secret salt",
+      "MEV bots see only the commitment, not swap details",
+      "Prevents front-running and sandwich attacks",
+    ],
+    color: "primary",
+  },
+  {
+    number: "02",
+    title: "Reveal",
+    subtitle: "Prove Your Intent",
+    description: "After your commitment is confirmed on-chain (1-2 blocks), reveal the actual payload and secret. The protocol verifies your reveal matches the commitment.",
+    details: [
+      "12-100 block reveal window (~2.5 to 20 minutes)",
+      "Protocol verifies: keccak(payload + secret) = commitment",
+      "Unrevealed transactions expire and refund automatically",
+    ],
+    color: "secondary",
+  },
+  {
+    number: "03",
+    title: "Resolve",
+    subtitle: "Execute Atomically",
+    description: "After a 2-block delay (flash loan protection), relayers resolve dependencies and mark transactions ready. Execution happens atomically across all chains.",
+    details: [
+      "2-block minimum delay prevents flash loan attacks",
+      "Atomic swap groups execute together or revert together",
+      "Relayer network ensures cross-chain coordination",
+    ],
+    color: "primary",
+  },
+];
+---
+
+<section class="py-20 bg-white dark:bg-gray-900">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-16">
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        How Cross-Rollup Swaps Work
+      </h2>
+      <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        Tesseract uses a three-phase commit-reveal-resolve pattern to enable
+        trustless atomic swaps with MEV protection and flash loan resistance.
+      </p>
+    </div>
+
+    <!-- Steps -->
+    <div class="relative">
+      <!-- Connection Line -->
+      <div class="hidden lg:block absolute top-24 left-1/2 -translate-x-1/2 w-2/3 h-0.5 bg-gradient-to-r from-primary-500 via-secondary-500 to-primary-500"></div>
+
+      <div class="grid lg:grid-cols-3 gap-8 lg:gap-12">
+        {steps.map((step, index) => (
+          <div class="relative">
+            <!-- Step Card -->
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-8 h-full">
+              <!-- Step Number -->
+              <div class={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6 text-2xl font-bold text-white ${
+                step.color === 'primary'
+                  ? 'bg-gradient-to-br from-primary-500 to-primary-600'
+                  : 'bg-gradient-to-br from-secondary-500 to-secondary-600'
+              }`}>
+                {step.number}
+              </div>
+
+              <!-- Title -->
+              <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                {step.title}
+              </h3>
+              <p class={`text-sm font-medium mb-4 ${
+                step.color === 'primary'
+                  ? 'text-primary-600 dark:text-primary-400'
+                  : 'text-secondary-600 dark:text-secondary-400'
+              }`}>
+                {step.subtitle}
+              </p>
+
+              <!-- Description -->
+              <p class="text-gray-600 dark:text-gray-400 mb-6">
+                {step.description}
+              </p>
+
+              <!-- Details List -->
+              <ul class="space-y-2">
+                {step.details.map((detail) => (
+                  <li class="flex items-start gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <svg class={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                      step.color === 'primary'
+                        ? 'text-primary-500'
+                        : 'text-secondary-500'
+                    }`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>{detail}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <!-- Arrow (between cards on mobile) -->
+            {index < steps.length - 1 && (
+              <div class="flex justify-center my-4 lg:hidden">
+                <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Transaction State Flow -->
+    <div class="mt-16 bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-8">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
+        Transaction State Flow
+      </h3>
+      <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-sm">
+        <span class="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 rounded-full font-medium text-gray-700 dark:text-gray-300">
+          EMPTY
+        </span>
+        <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        <span class="px-3 py-1.5 bg-primary-100 dark:bg-primary-900/30 rounded-full font-medium text-primary-700 dark:text-primary-300">
+          BUFFERED
+        </span>
+        <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        <span class="px-3 py-1.5 bg-secondary-100 dark:bg-secondary-900/30 rounded-full font-medium text-secondary-700 dark:text-secondary-300">
+          READY
+        </span>
+        <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        <span class="px-3 py-1.5 bg-green-100 dark:bg-green-900/30 rounded-full font-medium text-green-700 dark:text-green-300">
+          EXECUTED
+        </span>
+      </div>
+      <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
+        Expired or failed transactions can be <span class="font-medium">REFUNDED</span> automatically.
+      </p>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center mt-12">
+      <a href="/docs/how-it-works" class="btn-primary">
+        Read Full Technical Details
+      </a>
+    </div>
+  </div>
+</section>
