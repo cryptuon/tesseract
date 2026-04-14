@@ -34,7 +34,7 @@ Build robust cross-chain infrastructure:
 
 ```bash
 # Clone and setup environment
-git clone https://github.com/your-org/tesseract.git
+git clone https://github.com/cryptuon/tesseract.git
 cd tesseract
 uv sync
 
@@ -161,7 +161,7 @@ uv run python scripts/deploy_simple.py sepolia
 ### Installation
 ```bash
 # Clone repository
-git clone https://github.com/your-org/tesseract.git
+git clone https://github.com/cryptuon/tesseract.git
 cd tesseract
 
 # Install Python dependencies
@@ -445,8 +445,8 @@ SOFTWARE.
 ## Support & Community
 
 - **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/your-org/tesseract/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/tesseract/discussions)
+- **Issues**: [GitHub Issues](https://github.com/cryptuon/tesseract/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/cryptuon/tesseract/discussions)
 - **Discord**: [Tesseract Community](https://discord.gg/tesseract)
 - **Twitter**: [@TesseractProtocol](https://twitter.com/tesseractprotocol)
 
