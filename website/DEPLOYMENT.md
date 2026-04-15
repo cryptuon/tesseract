@@ -76,14 +76,21 @@ POSTGRES_PASSWORD=tesseract
 ## Step 4: Build and Run Locally
 
 ```bash
+# From the repo root (not website/)
+cd /path/to/tesseract
+
+# Copy env file
+cp website/.env.example website/.env
+# Edit website/.env with your values
+
 # Build all services
-docker-compose build
+docker-compose -f website/docker-compose.yml build
 
 # Start the stack
-docker-compose up -d
+docker-compose -f website/docker-compose.yml up -d
 
 # Check logs
-docker-compose logs -f
+docker-compose -f website/docker-compose.yml logs -f
 
 # Verify health
 curl http://localhost/api/health
@@ -94,6 +101,8 @@ Open http://localhost in your browser. The dashboard should show "Connected".
 
 ## Step 5: Deploy to CapRover
 
+**Important**: Deploy from the **repository root** (not the website directory).
+
 ### Option A: Using CapRover CLI
 
 ```bash
@@ -103,7 +112,8 @@ npm install -g caprover
 # Login to your CapRover instance
 caprover login
 
-# Deploy
+# Deploy from repo root (not website/)
+cd /path/to/tesseract
 caprover deploy
 ```
 
@@ -114,7 +124,7 @@ caprover deploy
    git remote add caprover captain@your-server.com:tesseract-demo
    ```
 
-2. Push to deploy:
+2. Push to deploy (from repo root):
    ```bash
    git push caprover main
    ```
