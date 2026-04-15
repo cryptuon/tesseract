@@ -1,10 +1,12 @@
 version: '3.8'
 
+# Run from repo root: docker-compose -f website/docker-compose.yml up
+
 services:
   # Static website served by Nginx
   website:
     build:
-      context: .
+      context: ./website
       dockerfile: Dockerfile
       args:
         PUBLIC_API_URL: /api
@@ -20,8 +22,10 @@ services:
   # Tesseract Relayer
   relayer:
     build:
-      context: ..
-      dockerfile: relayer/Dockerfile
+      context: ./relayer
+      dockerfile: Dockerfile
+    env_file:
+      - ./website/.env
     environment:
       - TESSERACT_CONFIG=/app/config/demo.toml
       - DATABASE_URL=postgres://tesseract:${POSTGRES_PASSWORD:-tesseract}@postgres:5432/tesseract_relayer
@@ -30,7 +34,7 @@ services:
       - COORDINATOR_ADDRESS=${COORDINATOR_ADDRESS}
       - RUST_LOG=info,tesseract_relayer=debug
     volumes:
-      - ./relayer-config/demo.toml:/app/config/demo.toml:ro
+      - ./website/relayer-config/demo.toml:/app/config/demo.toml:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -47,6 +51,8 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
+    env_file:
+      - ./website/.env
     environment:
       - POSTGRES_USER=tesseract
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-tesseract}
