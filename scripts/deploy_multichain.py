@@ -12,9 +12,10 @@ from ape import accounts, project, networks
 # Supported testnet networks
 NETWORKS = [
     "ethereum:sepolia:alchemy",
-    "polygon:mumbai:alchemy",
-    "arbitrum:arbitrum-goerli:alchemy",
-    "optimism:optimism-goerli:alchemy"
+    "polygon:amoy:alchemy",
+    "arbitrum:arbitrum-sepolia:alchemy",
+    "optimism:optimism-sepolia:alchemy",
+    "base:base-sepolia:alchemy"
 ]
 
 def deploy_to_network(network_name: str) -> dict:

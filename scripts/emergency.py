@@ -320,7 +320,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Tesseract emergency procedures")
-    parser.add_argument("network", help="Network (local, sepolia, mumbai)")
+    parser.add_argument("network", help="Network (local, sepolia, amoy, arbitrum_sepolia, optimism_sepolia, base_sepolia)")
     parser.add_argument("action", nargs="?", default="status",
                         help="Action: status, pause, unpause, reset-cb, transfer, set-admin")
     parser.add_argument("address", nargs="?", help="Address for transfer/set-admin")

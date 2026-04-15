@@ -51,10 +51,25 @@ def get_network_config(network: str = "local"):
             "chain_id": 11155111,
             "name": "Ethereum Sepolia"
         },
-        "mumbai": {
-            "rpc_url": f"https://polygon-mumbai.g.alchemy.com/v2/{os.getenv('ALCHEMY_API_KEY', '')}",
-            "chain_id": 80001,
-            "name": "Polygon Mumbai"
+        "amoy": {
+            "rpc_url": f"https://polygon-amoy.g.alchemy.com/v2/{os.getenv('ALCHEMY_API_KEY', '')}",
+            "chain_id": 80002,
+            "name": "Polygon Amoy"
+        },
+        "arbitrum_sepolia": {
+            "rpc_url": f"https://arb-sepolia.g.alchemy.com/v2/{os.getenv('ALCHEMY_API_KEY', '')}",
+            "chain_id": 421614,
+            "name": "Arbitrum Sepolia"
+        },
+        "optimism_sepolia": {
+            "rpc_url": f"https://opt-sepolia.g.alchemy.com/v2/{os.getenv('ALCHEMY_API_KEY', '')}",
+            "chain_id": 11155420,
+            "name": "Optimism Sepolia"
+        },
+        "base_sepolia": {
+            "rpc_url": f"https://base-sepolia.g.alchemy.com/v2/{os.getenv('ALCHEMY_API_KEY', '')}",
+            "chain_id": 84532,
+            "name": "Base Sepolia"
         }
     }
     return networks.get(network, networks["local"])
