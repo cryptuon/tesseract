@@ -1,0 +1,92 @@
+# Tesseract Demo - Combined Container for CapRover
+# Runs website (nginx) + relayer + PostgreSQL via supervisord
+
+# =============================================================================
+# Stage 1: Build Website
+# =============================================================================
+FROM node:20-alpine AS website-builder
+
+WORKDIR /app
+
+COPY website/package.json website/package-lock.json ./
+RUN npm ci
+
+COPY website/ .
+
+ARG PUBLIC_API_URL=/api
+ENV PUBLIC_API_URL=${PUBLIC_API_URL}
+
+RUN npm run build
+
+# =============================================================================
+# Stage 2: Build Relayer
+# =============================================================================
+FROM rust:1.75-bookworm AS relayer-builder
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY relayer/Cargo.toml relayer/Cargo.lock ./
+
+# Cache dependencies
+RUN mkdir src && \
+    echo "fn main() {}" > src/main.rs && \
+    cargo build --release && \
+    rm -rf src
+
+COPY relayer/src ./src
+
+RUN touch src/main.rs && cargo build --release
+
+# =============================================================================
+# Stage 3: Production Runtime
+# =============================================================================
+FROM debian:bookworm-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    nginx \
+    postgresql-15 \
+    supervisor \
+    curl \
+    ca-certificates \
+    libssl3 \
+    gosu \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create directories
+RUN mkdir -p /var/run/postgresql /var/log/supervisor /app/config \
+    && chown -R postgres:postgres /var/run/postgresql
+
+# Copy website assets
+COPY --from=website-builder /app/dist /usr/share/nginx/html
+
+# Copy relayer binary
+COPY --from=relayer-builder /app/target/release/tesseract-relayer /app/tesseract-relayer
+
+# Copy relayer config
+COPY website/relayer-config/demo.toml /app/config/demo.toml
+
+# Copy nginx config
+COPY scripts/nginx-caprover.conf /etc/nginx/sites-available/default
+RUN rm -f /etc/nginx/sites-enabled/default && \
+    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+# Copy supervisord config
+COPY scripts/supervisord.conf /etc/supervisor/conf.d/tesseract.conf
+
+# Copy entrypoint script
+COPY scripts/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost/api/health || exit 1
+
+EXPOSE 80
+
+ENTRYPOINT ["/docker-entrypoint.sh"]

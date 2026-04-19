@@ -1,4 +1,4 @@
 {
   "schemaVersion": 2,
-  "dockerComposeFileLocation": "./website/docker-compose.yml"
+  "dockerfilePath": "./Dockerfile.caprover"
 }
