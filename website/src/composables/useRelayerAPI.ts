@@ -1,6 +1,6 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import type { Ref } from 'vue';
-import api, { type StatsResponse, type StatusResponse, type ChainHealth } from '../lib/api';
+import api, { type StatsResponse, type StatusResponse, type ChainHealth } from '@lib/api';
 
 interface UseRelayerAPIOptions {
   pollInterval?: number;

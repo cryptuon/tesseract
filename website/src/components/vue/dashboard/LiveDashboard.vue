@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import ChainStatusCard from './ChainStatusCard.vue';
 import TransactionStats from './TransactionStats.vue';
 import RelayerHealth from './RelayerHealth.vue';
-import { useRelayerAPI } from '../../../composables/useRelayerAPI';
+import { useRelayerAPI } from '@/composables/useRelayerAPI';
 
 const { status, stats, chainHealth, loading, error, isConnected } = useRelayerAPI({
   pollInterval: 10000,

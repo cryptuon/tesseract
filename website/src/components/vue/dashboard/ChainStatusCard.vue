@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { ChainHealth } from '../../../lib/api';
-import { getNetworkByChainId } from '../../../lib/constants';
+import type { ChainHealth } from '@lib/api';
+import { getNetworkByChainId } from '@lib/constants';
 
 interface Props {
   chain: ChainHealth;

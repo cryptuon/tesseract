@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { StatsResponse } from '../../../lib/api';
+import type { StatsResponse } from '@lib/api';
 
 interface Props {
   stats: StatsResponse | null;
