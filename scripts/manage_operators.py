@@ -252,7 +252,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Manage Tesseract operators")
-    parser.add_argument("network", help="Network (local, sepolia, mumbai)")
+    parser.add_argument("network", help="Network (local, sepolia, amoy, arbitrum_sepolia, optimism_sepolia, base_sepolia)")
     parser.add_argument("action", nargs="?", default="list",
                         help="Action: add, remove, check, list")
     parser.add_argument("address", nargs="?", help="Operator address")
