@@ -22,41 +22,53 @@
         "https://www.alchemy.com/faucets/ethereum-sepolia"
       ]
     },
-    "mumbai": {
-      "name": "Polygon Mumbai",
-      "chain_id": 80001,
-      "rpc_url_template": "https://polygon-mumbai.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
-      "explorer_url": "https://mumbai.polygonscan.com",
-      "native_currency": "MATIC",
+    "amoy": {
+      "name": "Polygon Amoy",
+      "chain_id": 80002,
+      "rpc_url_template": "https://polygon-amoy.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://amoy.polygonscan.com",
+      "native_currency": "POL",
       "is_testnet": true,
       "requires_private_key": true,
       "faucets": [
-        "https://mumbaifaucet.com/",
-        "https://faucet.polygon.technology/"
+        "https://faucet.polygon.technology/",
+        "https://www.alchemy.com/faucets/polygon-amoy"
       ]
     },
-    "arbitrum_goerli": {
-      "name": "Arbitrum Goerli",
-      "chain_id": 421613,
-      "rpc_url_template": "https://arb-goerli.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
-      "explorer_url": "https://goerli.arbiscan.io",
+    "arbitrum_sepolia": {
+      "name": "Arbitrum Sepolia",
+      "chain_id": 421614,
+      "rpc_url_template": "https://arb-sepolia.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://sepolia.arbiscan.io",
       "native_currency": "ETH",
       "is_testnet": true,
       "requires_private_key": true,
       "faucets": [
-        "https://faucet.quicknode.com/arbitrum/goerli"
+        "https://www.alchemy.com/faucets/arbitrum-sepolia"
       ]
     },
-    "optimism_goerli": {
-      "name": "Optimism Goerli",
-      "chain_id": 420,
-      "rpc_url_template": "https://opt-goerli.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
-      "explorer_url": "https://goerli-optimism.etherscan.io",
+    "optimism_sepolia": {
+      "name": "Optimism Sepolia",
+      "chain_id": 11155420,
+      "rpc_url_template": "https://opt-sepolia.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://sepolia-optimistic.etherscan.io",
       "native_currency": "ETH",
       "is_testnet": true,
       "requires_private_key": true,
       "faucets": [
-        "https://faucet.quicknode.com/optimism/goerli"
+        "https://www.alchemy.com/faucets/optimism-sepolia"
+      ]
+    },
+    "base_sepolia": {
+      "name": "Base Sepolia",
+      "chain_id": 84532,
+      "rpc_url_template": "https://base-sepolia.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://sepolia.basescan.org",
+      "native_currency": "ETH",
+      "is_testnet": true,
+      "requires_private_key": true,
+      "faucets": [
+        "https://www.alchemy.com/faucets/base-sepolia"
       ]
     },
     "mainnet": {
@@ -74,12 +86,42 @@
       "chain_id": 137,
       "rpc_url_template": "https://polygon-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
       "explorer_url": "https://polygonscan.com",
-      "native_currency": "MATIC",
+      "native_currency": "POL",
+      "is_testnet": false,
+      "requires_private_key": true,
+      "warning": "MAINNET - Real funds at risk!"
+    },
+    "arbitrum": {
+      "name": "Arbitrum One",
+      "chain_id": 42161,
+      "rpc_url_template": "https://arb-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://arbiscan.io",
+      "native_currency": "ETH",
+      "is_testnet": false,
+      "requires_private_key": true,
+      "warning": "MAINNET - Real funds at risk!"
+    },
+    "optimism": {
+      "name": "Optimism Mainnet",
+      "chain_id": 10,
+      "rpc_url_template": "https://opt-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://optimistic.etherscan.io",
+      "native_currency": "ETH",
+      "is_testnet": false,
+      "requires_private_key": true,
+      "warning": "MAINNET - Real funds at risk!"
+    },
+    "base": {
+      "name": "Base Mainnet",
+      "chain_id": 8453,
+      "rpc_url_template": "https://base-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}",
+      "explorer_url": "https://basescan.org",
+      "native_currency": "ETH",
       "is_testnet": false,
       "requires_private_key": true,
       "warning": "MAINNET - Real funds at risk!"
     }
   },
   "default_network": "local",
-  "recommended_testnets": ["sepolia", "mumbai"]
+  "recommended_testnets": ["sepolia", "amoy", "arbitrum_sepolia", "optimism_sepolia", "base_sepolia"]
 }
