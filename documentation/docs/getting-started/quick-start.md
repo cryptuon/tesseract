@@ -9,8 +9,13 @@ Get Tesseract running in under 5 minutes.
 Before you begin, ensure you have:
 
 - **Python 3.11+** - [Download Python](https://python.org)
-- **Poetry** - [Install Poetry](https://python-poetry.org/docs/#installation)
+- **uv** - [Install uv](https://docs.astral.sh/uv/) (Python package manager)
 - **Git** - [Install Git](https://git-scm.com/)
+
+Optional:
+
+- **Rust 1.75+** - For building the relayer
+- **Anvil** - For local testing (install via [Foundry](https://book.getfoundry.sh/))
 
 ---
 
@@ -18,62 +23,64 @@ Before you begin, ensure you have:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/tesseract.git
+git clone https://github.com/cryptuon/tesseract.git
 cd tesseract
 
 # Install dependencies
-poetry install
-
-# Activate virtual environment
-poetry shell
+uv sync
 ```
 
 ---
 
 ## Step 2: Verify Installation
 
-Test that the contract compiles successfully:
+Test that all contracts compile successfully:
 
 ```bash
-poetry run python scripts/test_compilation.py
+uv run pytest tests/test_compilation.py -v
 ```
 
-Expected output:
+The repository ships **7 production Vyper contracts**, plus a `TesseractSimple.vy` reference implementation. Compilation of all contracts is covered by the test suite.
 
-```
-Compiling TesseractSimple.vy...
-Compilation successful!
-Bytecode length: 7,276 bytes
-ABI contains 18 items
-All tests passed!
+You can also confirm the Vyper compiler version directly:
+
+```bash
+uv run python -c "import vyper; print(f'Vyper: {vyper.__version__}')"
 ```
 
 ---
 
 ## Step 3: Run Tests
 
-Execute the test suite:
+Execute the full test suite (135 tests):
 
 ```bash
 # Run all tests
-poetry run pytest tests/
+uv run pytest tests/ -v
 
-# Run with verbose output
-poetry run pytest tests/ -v
+# Run a specific category
+uv run pytest tests/test_compilation.py -v   # Contract compilation
+uv run pytest tests/test_tokenomics.py -v    # Token, staking, governance
+uv run pytest tests/test_defi_security.py -v # DeFi security features
 ```
 
 ---
 
-## Step 4: Deploy Locally
+## Step 4: Deploy
 
-Deploy to a local blockchain (requires a running node):
+Deploy to a public testnet:
 
 ```bash
-poetry run python scripts/deploy_simple.py
+# Set environment
+export PRIVATE_KEY="0x..."
+export SEPOLIA_RPC_URL="https://eth-sepolia.g.alchemy.com/v2/..."
+
+# Deploy
+uv run python scripts/deploy_simple.py sepolia
 ```
 
 !!! tip "Local Development"
-    For local testing, you can use [Anvil](https://book.getfoundry.sh/anvil/) or [Ganache](https://trufflesuite.com/ganache/) as your local blockchain.
+    For local testing, use [Anvil](https://book.getfoundry.sh/anvil/) as your local blockchain.
 
 ---
 
@@ -92,10 +99,10 @@ Now that you have Tesseract installed:
 
 ### Common Issues
 
-??? question "Poetry not found"
-    Install Poetry using the official installer:
+??? question "uv not found"
+    Install uv using the official installer:
     ```bash
-    curl -sSL https://install.python-poetry.org | python3 -
+    curl -LsSf https://astral.sh/uv/install.sh | sh
     ```
 
 ??? question "Python version mismatch"
@@ -107,7 +114,7 @@ Now that you have Tesseract installed:
 ??? question "Vyper compilation errors"
     Ensure Vyper 0.3.10 is installed:
     ```bash
-    poetry run python -c "import vyper; print(vyper.__version__)"
+    uv run python -c "import vyper; print(vyper.__version__)"
     ```
 
-Need more help? Check the [Troubleshooting Guide](../guides/troubleshooting.md) or [open an issue](https://github.com/your-org/tesseract/issues).
+Need more help? Check the [Troubleshooting Guide](../guides/troubleshooting.md) or [open an issue](https://github.com/cryptuon/tesseract/issues).

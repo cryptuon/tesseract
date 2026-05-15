@@ -17,17 +17,14 @@ Thank you for your interest in contributing to Tesseract!
 
 ```bash
 # Clone repository
-git clone https://github.com/your-org/tesseract.git
+git clone https://github.com/cryptuon/tesseract.git
 cd tesseract
 
 # Install dependencies
-poetry install --with dev
-
-# Activate environment
-poetry shell
+uv sync --all-extras
 
 # Verify setup
-poetry run python scripts/test_compilation.py
+uv run pytest tests/test_compilation.py -v
 ```
 
 ---
@@ -54,13 +51,13 @@ git checkout -b fix/issue-description
 
 ```bash
 # Run compilation test
-poetry run python scripts/test_compilation.py
+uv run pytest tests/test_compilation.py -v
 
 # Run test suite
-poetry run pytest tests/ -v
+uv run pytest tests/ -v
 
 # Format code
-poetry run black .
+uv run black .
 ```
 
 ### 4. Submit Pull Request

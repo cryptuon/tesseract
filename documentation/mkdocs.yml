@@ -1,10 +1,11 @@
 site_name: Tesseract Documentation
 site_description: Cross-Rollup Atomic Transaction Execution System
 site_author: Tesseract Protocol
-site_url: https://tesseract-protocol.github.io/tesseract/
+site_url: https://tesseract.docs.cryptuon.com/
 
-repo_name: tesseract
-repo_url: https://github.com/your-org/tesseract
+repo_name: cryptuon/tesseract
+repo_url: https://github.com/cryptuon/tesseract
+edit_uri: edit/main/documentation/docs/
 
 theme:
   name: material
@@ -92,10 +93,6 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/your-org/tesseract
-    - icon: fontawesome/brands/discord
-      link: https://discord.gg/tesseract
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/tesseractprotocol
+      link: https://github.com/cryptuon/tesseract
 
-copyright: Copyright &copy; 2024 Tesseract Protocol
+copyright: Copyright &copy; 2025 Tesseract Protocol

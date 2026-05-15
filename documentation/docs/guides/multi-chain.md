@@ -20,10 +20,11 @@ Tesseract is designed to coordinate transactions across multiple networks. This 
 
 | Network | Chain ID | RPC Endpoint |
 |---------|----------|--------------|
-| Ethereum Sepolia | 11155111 | sepolia.infura.io |
-| Polygon Mumbai | 80001 | polygon-mumbai.infura.io |
-| Arbitrum Goerli | 421613 | arb-goerli.g.alchemy.com |
-| Optimism Goerli | 420 | opt-goerli.g.alchemy.com |
+| Ethereum Sepolia | 11155111 | eth-sepolia.g.alchemy.com |
+| Polygon Amoy | 80002 | polygon-amoy.g.alchemy.com |
+| Arbitrum Sepolia | 421614 | arb-sepolia.g.alchemy.com |
+| Optimism Sepolia | 11155420 | opt-sepolia.g.alchemy.com |
+| Base Sepolia | 84532 | base-sepolia.g.alchemy.com |
 
 ### Configuration File
 

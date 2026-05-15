@@ -18,7 +18,7 @@ The Python SDK provides a high-level interface for Tesseract operations using We
 ### Installation
 
 ```bash
-poetry install
+uv sync
 ```
 
 ### Basic Connection

@@ -41,9 +41,10 @@ graph TB
 | Network | Mainnet | Testnet |
 |---------|---------|---------|
 | Ethereum | Mainnet | Sepolia |
-| Polygon | Mainnet | Mumbai |
-| Arbitrum | One | Goerli |
-| Optimism | Mainnet | Goerli |
+| Polygon | Mainnet | Amoy |
+| Arbitrum | One | Sepolia |
+| Optimism | Mainnet | Sepolia |
+| Base | Mainnet | Sepolia |
 
 ---
 

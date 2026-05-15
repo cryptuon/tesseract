@@ -1,19 +1,20 @@
 # Tesseract
 
-**Cross-Rollup Atomic Transaction Execution System**
+**Cross-Rollup Atomic Swap Protocol**
 
-Tesseract enables coordinated transaction processing across multiple Layer 2 rollups with atomic execution guarantees. Built with Vyper smart contracts for maximum security.
+Tesseract is a production-ready cross-rollup atomic swap protocol enabling trustless token exchanges across Ethereum L2s. Built with Vyper smart contracts, a high-performance Rust relayer, and comprehensive DeFi security features including MEV protection, flash loan resistance, and atomic swap groups.
 
 ---
 
 ## What is Tesseract?
 
-Tesseract is a production-ready protocol for executing atomic transactions across multiple blockchain rollups. It solves the fundamental challenge of cross-chain coordination by providing:
+Tesseract solves the fundamental challenge of cross-chain coordination by providing:
 
 - **Atomic Execution**: All-or-nothing transaction semantics across rollups
-- **Dependency Resolution**: Intelligent handling of transaction dependencies
-- **Time-Bounded Coordination**: Guaranteed execution within defined windows
-- **Security-First Design**: Built with Vyper for memory safety and overflow protection
+- **MEV Protection**: Commit-reveal scheme prevents front-running and sandwich attacks
+- **Flash Loan Resistance**: Minimum 2-block delay before transaction resolution
+- **Time-Bounded Coordination**: Configurable execution windows (5-300 seconds)
+- **Security-First Design**: Built with Vyper for built-in overflow protection
 
 ```mermaid
 graph LR
@@ -28,7 +29,7 @@ graph LR
 
 ### Cross-Chain DeFi
 
-Execute atomic trades, rebalance liquidity pools, and coordinate lending operations across Ethereum, Polygon, Arbitrum, and Optimism.
+Execute atomic trades, rebalance liquidity pools, and coordinate lending across Ethereum, Polygon, Arbitrum, Optimism, and Base.
 
 ### Enterprise Workflows
 
@@ -42,16 +43,20 @@ Build bridges, oracle networks, and interoperability layers with strong atomicit
 
 ## Quick Start
 
-Get started with Tesseract in minutes:
-
 ```bash
-# Clone and install
-git clone https://github.com/your-org/tesseract.git
+# Clone and setup environment
+git clone https://github.com/cryptuon/tesseract.git
 cd tesseract
-poetry install
+uv sync
 
-# Verify installation
-poetry run python scripts/test_compilation.py
+# Verify contract compilation (7 contracts)
+uv run pytest tests/test_compilation.py -v
+
+# Run full test suite
+uv run pytest tests/ -v
+
+# Deploy to testnet
+uv run python scripts/deploy_simple.py sepolia
 ```
 
 [Get Started :material-arrow-right:](getting-started/quick-start.md){ .md-button .md-button--primary }
@@ -62,17 +67,17 @@ poetry run python scripts/test_compilation.py
 
 <div class="grid cards" markdown>
 
--   :material-shield-check:{ .lg .middle } **Security First**
+-   :material-shield-check:{ .lg .middle } **DeFi Security**
 
     ---
 
-    Vyper smart contracts with built-in overflow protection, role-based access control, and emergency circuit breakers.
+    MEV protection via commit-reveal, flash loan resistance, reentrancy protection, and configurable slippage protection.
 
 -   :material-link-variant:{ .lg .middle } **Cross-Rollup Coordination**
 
     ---
 
-    Atomic execution across Ethereum, Polygon, Arbitrum, and Optimism with dependency resolution.
+    Atomic swaps across Ethereum, Polygon, Arbitrum, Optimism, and Base with DAG-based dependency resolution.
 
 -   :material-clock-fast:{ .lg .middle } **Time-Bounded Execution**
 
@@ -80,11 +85,11 @@ poetry run python scripts/test_compilation.py
 
     Configurable coordination windows (5-300 seconds) ensure predictable transaction timing.
 
--   :material-gas-station:{ .lg .middle } **Gas Optimized**
+-   :material-coin:{ .lg .middle } **Tokenomics & Governance**
 
     ---
 
-    Efficient on-chain operations with ~80k gas per buffer and ~40k per resolution.
+    TESS governance token, staking with tiered rewards (5-15% APY based on lock duration), and on-chain governance.
 
 </div>
 
@@ -92,41 +97,43 @@ poetry run python scripts/test_compilation.py
 
 ## Architecture Overview
 
-Tesseract uses a **buffer-resolve-execute** pattern:
+Tesseract uses a **buffer-resolve-execute** pattern, backed by 7 Vyper contracts and a Rust relayer.
 
-1. **Buffer**: Transactions are submitted with dependency information
-2. **Resolve**: Dependencies are validated and timing constraints checked
-3. **Execute**: Ready transactions are atomically executed across rollups
-
-| Component | Description |
-|-----------|-------------|
-| `TesseractSimple.vy` | Main coordination contract (7,276 bytes) |
-| Transaction Buffer | Secure storage for cross-rollup transactions |
-| Dependency Engine | Validates and resolves transaction dependencies |
-| Access Control | Role-based operator authorization |
+| Contract | Size | Purpose |
+|----------|------|---------|
+| `TesseractBuffer.vy` | 12,578 bytes | Core transaction buffering with DeFi security |
+| `AtomicSwapCoordinator.vy` | 8,332 bytes | Order book and swap coordination |
+| `TesseractToken.vy` | 4,521 bytes | TESS governance token (ERC-20) |
+| `TesseractStaking.vy` | 6,890 bytes | Staking with tiered rewards |
+| `FeeCollector.vy` | 3,245 bytes | Protocol fee collection and distribution |
+| `RelayerRegistry.vy` | 4,112 bytes | Relayer bonding and management |
+| `TesseractGovernor.vy` | 5,678 bytes | On-chain governance |
 
 ---
 
 ## Supported Networks
 
-| Network | Status | Testnet |
-|---------|--------|---------|
+| Network | Mainnet | Testnet |
+|---------|---------|---------|
 | Ethereum | Ready | Sepolia |
-| Polygon | Ready | Mumbai |
-| Arbitrum | Ready | Goerli |
-| Optimism | Ready | Goerli |
+| Polygon | Ready | Amoy |
+| Arbitrum | Ready (One) | Sepolia |
+| Optimism | Ready | Sepolia |
+| Base | Ready | Sepolia |
 
 ---
 
 ## Current Status
 
-| Milestone | Status |
+| Component | Status |
 |-----------|--------|
-| Contract Development | Complete |
-| Local Testing | Complete |
+| Smart Contracts (7) | Complete |
+| Rust Relayer | Complete |
+| Test Suite (135 tests) | Complete |
+| Monitoring Stack | Complete |
+| Terraform Infrastructure | Complete |
 | Testnet Deployment | Ready |
 | Security Audit | Pending |
-| Production Deployment | Pending |
 
 ---
 

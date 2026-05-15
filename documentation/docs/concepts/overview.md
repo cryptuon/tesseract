@@ -184,9 +184,30 @@ Comprehensive transaction lifecycle tracking:
 
 ### Gas Efficiency
 
-- ~80,000 gas per buffer
-- ~40,000 gas per resolution
-- ~25,000 gas per execution marking
+Production contract gas costs (`TesseractBuffer.vy`):
+
+| Operation | Gas Cost | Notes |
+|-----------|----------|-------|
+| `buffer_transaction` | ~120,000 | Basic buffering |
+| `buffer_transaction_with_commitment` | ~150,000 | With commit-reveal MEV protection |
+| `reveal_transaction` | ~80,000 | Reveal phase |
+| `resolve_dependency` | ~100,000 | Resolution |
+| `create_swap_order` | ~180,000 | Order creation |
+| `fill_swap_order` | ~200,000 | Order fill |
+
+The simpler `TesseractSimple.vy` reference contract is lighter — useful for learning and local testing, but the production stack uses the seven contracts listed in the [Home page](../index.md).
+
+---
+
+## TESS Token & Staking
+
+Tesseract uses a native governance token, **TESS**, alongside the protocol:
+
+- **Governance**: TESS holders vote on protocol parameters via `TesseractGovernor.vy`
+- **Fee discounts**: Stakers receive up to 50% reduction on protocol fees
+- **Staking rewards**: 5-15% APY based on lock duration (longer locks earn higher tiers)
+
+Staking is implemented in `TesseractStaking.vy`; fee collection and distribution in `FeeCollector.vy`. See the [Smart Contract API](../api/contract-api.md) for entry points.
 
 ---
 

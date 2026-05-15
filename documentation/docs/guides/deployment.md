@@ -71,9 +71,10 @@ print(f"Deployed at: {receipt.contractAddress}")
 | Network | Faucet | Amount Needed |
 |---------|--------|---------------|
 | Sepolia | [sepoliafaucet.com](https://sepoliafaucet.com) | ~0.1 ETH |
-| Mumbai | [faucet.polygon.technology](https://faucet.polygon.technology) | ~1 MATIC |
-| Arbitrum Goerli | [bridge.arbitrum.io](https://bridge.arbitrum.io) | ~0.1 ETH |
-| Optimism Goerli | [app.optimism.io](https://app.optimism.io/bridge) | ~0.1 ETH |
+| Polygon Amoy | [faucet.polygon.technology](https://faucet.polygon.technology) | ~1 POL |
+| Arbitrum Sepolia | [bridge.arbitrum.io](https://bridge.arbitrum.io) | ~0.1 ETH |
+| Optimism Sepolia | [app.optimism.io](https://app.optimism.io/bridge) | ~0.1 ETH |
+| Base Sepolia | [bridge.base.org](https://bridge.base.org) | ~0.1 ETH |
 
 ### Step 2: Configure Environment
 
@@ -168,7 +169,7 @@ if __name__ == "__main__":
 
 ```bash
 # Run deployment
-poetry run python scripts/deploy_testnet.py
+uv run python scripts/deploy_simple.py sepolia
 
 # Verify on explorer
 # Sepolia: https://sepolia.etherscan.io/address/YOUR_ADDRESS

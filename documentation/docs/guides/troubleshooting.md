@@ -34,15 +34,15 @@ def diagnose(contract):
 
 ## Installation Issues
 
-??? question "Poetry not found"
-    **Problem:** `poetry: command not found`
+??? question "uv not found"
+    **Problem:** `uv: command not found`
 
     **Solution:**
     ```bash
-    # Install Poetry
-    curl -sSL https://install.python-poetry.org | python3 -
+    # Install uv
+    curl -LsSf https://astral.sh/uv/install.sh | sh
 
-    # Add to PATH
+    # Add to PATH (usually automatic)
     export PATH="$HOME/.local/bin:$PATH"
     ```
 
@@ -58,8 +58,8 @@ def diagnose(contract):
     # On Ubuntu:
     sudo apt install python3.11
 
-    # Configure Poetry to use it
-    poetry env use python3.11
+    # uv will pick the project's required Python automatically
+    uv sync
     ```
 
 ??? question "Vyper compilation fails"
@@ -68,11 +68,11 @@ def diagnose(contract):
     **Solution:**
     ```bash
     # Verify Vyper version
-    poetry run python -c "import vyper; print(vyper.__version__)"
+    uv run python -c "import vyper; print(vyper.__version__)"
 
     # Should be 0.3.10
-    # If not, reinstall:
-    poetry add vyper@0.3.10
+    # If not, run a clean sync:
+    rm -rf .venv && uv sync
     ```
 
 ---
@@ -411,7 +411,7 @@ def test_full_workflow(contract, operator):
 
 If you're still stuck:
 
-1. Check the [GitHub Issues](https://github.com/your-org/tesseract/issues)
+1. Check the [GitHub Issues](https://github.com/cryptuon/tesseract/issues)
 2. Search existing issues for similar problems
 3. Create a new issue with:
    - Error message
