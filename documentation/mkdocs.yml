@@ -1,7 +1,7 @@
 site_name: Tesseract Documentation
 site_description: Cross-Rollup Atomic Transaction Execution System
 site_author: Tesseract Protocol
-site_url: https://tesseract.docs.cryptuon.com/
+site_url: https://docs.cryptuon.com/tesseract/
 
 repo_name: cryptuon/tesseract
 repo_url: https://github.com/cryptuon/tesseract
