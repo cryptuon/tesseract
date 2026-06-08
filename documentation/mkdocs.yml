@@ -25,6 +25,7 @@ theme:
   features:
     - navigation.tabs
     - navigation.sections
+    - navigation.indexes
     - navigation.expand
     - navigation.top
     - search.suggest
@@ -66,29 +67,31 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started:
-      - Quick Start: getting-started/quick-start.md
-      - Installation: getting-started/installation.md
-      - Your First Transaction: getting-started/first-transaction.md
-  - Core Concepts:
-      - Overview: concepts/overview.md
-      - Transaction Lifecycle: concepts/transaction-lifecycle.md
-      - Cross-Rollup Coordination: concepts/cross-rollup-coordination.md
-      - Security Model: concepts/security-model.md
-  - Guides:
-      - Deployment: guides/deployment.md
-      - Multi-Chain Setup: guides/multi-chain.md
-      - Monitoring: guides/monitoring.md
-      - Troubleshooting: guides/troubleshooting.md
+  - Docs:
+      - Getting Started:
+          - Quick Start: getting-started/quick-start.md
+          - Installation: getting-started/installation.md
+          - Your First Transaction: getting-started/first-transaction.md
+      - Core Concepts:
+          - Overview: concepts/overview.md
+          - Transaction Lifecycle: concepts/transaction-lifecycle.md
+          - Cross-Rollup Coordination: concepts/cross-rollup-coordination.md
+          - Security Model: concepts/security-model.md
+      - Guides:
+          - Deployment: guides/deployment.md
+          - Multi-Chain Setup: guides/multi-chain.md
+          - Monitoring: guides/monitoring.md
+          - Troubleshooting: guides/troubleshooting.md
+      - Examples:
+          - Basic Usage: examples/basic-usage.md
+          - Cross-Chain DeFi: examples/cross-chain-defi.md
+          - Dependency Chains: examples/dependency-chains.md
   - API Reference:
       - Smart Contract API: api/contract-api.md
       - Python SDK: api/python-sdk.md
       - Events: api/events.md
-  - Examples:
-      - Basic Usage: examples/basic-usage.md
-      - Cross-Chain DeFi: examples/cross-chain-defi.md
-      - Dependency Chains: examples/dependency-chains.md
-  - Contributing: contributing.md
+  - Project:
+      - Contributing: contributing.md
 
 extra:
   social:
