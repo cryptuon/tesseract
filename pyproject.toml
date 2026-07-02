@@ -1,10 +1,22 @@
 [project]
 name = "tesseract"
 version = "0.1.0"
-description = "Universal Atomic Composability for Rollups"
-authors = [{name = "Dipankar Sarkar", email = "me@dipankar.name"}]
+description = "Cross-rollup atomic swap protocol for Ethereum L2s with MEV protection."
+authors = [{name = "Cryptuon Research", email = "contact@cryptuon.com"}]
 readme = "README.md"
 requires-python = ">=3.11"
+license = {text = "MIT"}
+keywords = ["ethereum", "cross-chain", "rollup", "l2", "atomic-swap", "defi", "mev", "interoperability", "vyper"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Security :: Cryptography",
+]
 dependencies = [
     "vyper>=0.3.10,<0.4.0",
     "web3>=6.11.0,<6.12.0",
@@ -34,6 +46,11 @@ docs = [
     "mkdocstrings[python]>=0.24.0",
     "pymdown-extensions>=10.7",
 ]
+
+[project.urls]
+homepage = "https://tesseract.cryptuon.com/"
+documentation = "https://docs.cryptuon.com/tesseract/"
+repository = "https://github.com/cryptuon/tesseract"
 
 [build-system]
 requires = ["hatchling"]

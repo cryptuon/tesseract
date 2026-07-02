@@ -5,6 +5,8 @@
 [![Rust](https://img.shields.io/badge/Rust-1.75+-orange.svg)](https://rust-lang.org)
 [![Python](https://img.shields.io/badge/Python-3.11+-green.svg)](https://python.org)
 
+**[🌐 Site](https://tesseract.cryptuon.com/) · [📚 Docs](https://docs.cryptuon.com/tesseract/) · [🔬 Cryptuon Research](https://github.com/cryptuon)**
+
 Tesseract is a production-ready cross-rollup atomic swap protocol enabling trustless token exchanges across Ethereum L2s. Built with Vyper smart contracts, a high-performance Rust relayer, and comprehensive DeFi security features including MEV protection, flash loan resistance, and atomic swap groups.
 
 ## Use Cases
@@ -453,3 +455,13 @@ SOFTWARE.
 ---
 
 **Built for the multi-rollup future**
+
+---
+
+## Part of Cryptuon Research
+
+`tesseract` is one of [20 open-source blockchain-infrastructure projects](https://www.cryptuon.com/projects) from **[Cryptuon Research](https://www.cryptuon.com)** — blockchain theory, shipped as protocols.
+
+**Related projects:** [Switchboard](https://switchboard.cryptuon.com/) · [Zig-EVM](https://zig-evm.cryptuon.com/) · [nklave](https://nklave.cryptuon.com/)
+
+Docs: [docs.cryptuon.com/tesseract](https://docs.cryptuon.com/tesseract/) · Contact: [contact@cryptuon.com](mailto:contact@cryptuon.com)

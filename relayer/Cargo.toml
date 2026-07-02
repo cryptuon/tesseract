@@ -2,10 +2,13 @@
 name = "tesseract-relayer"
 version = "0.1.0"
 edition = "2021"
-authors = ["Dipankar Sarkar <me@dipankar.name>"]
+authors = ["Cryptuon Research <contact@cryptuon.com>"]
 description = "High-performance multi-chain relayer for Tesseract cross-rollup atomic swaps"
 license = "MIT"
-repository = "https://github.com/anthropics/tesseract"
+homepage = "https://tesseract.cryptuon.com/"
+documentation = "https://docs.cryptuon.com/tesseract/"
+repository = "https://github.com/cryptuon/tesseract"
+keywords = ["ethereum", "cross-chain", "rollup", "atomic-swap", "relayer"]
 
 [dependencies]
 # Async runtime
