@@ -5,11 +5,40 @@
 [![Rust](https://img.shields.io/badge/Rust-1.75+-orange.svg)](https://rust-lang.org)
 [![Python](https://img.shields.io/badge/Python-3.11+-green.svg)](https://python.org)
 
-**[🌐 Site](https://tesseract.cryptuon.com/) · [📚 Docs](https://docs.cryptuon.com/tesseract/) · [🔬 Cryptuon Research](https://github.com/cryptuon)**
+**[🌐 Site](https://tesseract.cryptuon.com/) · [📚 Docs](https://docs.cryptuon.com/tesseract/) · [🗺️ Roadmap](ROADMAP.md) · [🔬 Cryptuon Research](https://github.com/cryptuon)**
 
-Tesseract is a production-ready cross-rollup atomic swap protocol enabling trustless token exchanges across Ethereum L2s. Built with Vyper smart contracts, a high-performance Rust relayer, and comprehensive DeFi security features including MEV protection, flash loan resistance, and atomic swap groups.
+**Tesseract is the atomic-execution layer for cross-chain agents and DeFi on Ethereum L2s.** It coordinates all-or-nothing token swaps across rollups — every leg resolves everywhere, or every leg refunds everywhere — with no bridges, no wrapped assets, and no custodial vaults. Vyper smart contracts and a high-performance Rust relayer enforce atomicity on-chain, with commit-reveal MEV protection, flash-loan resistance, and deadline-bounded atomic swap groups.
+
+Tesseract is built on the research paper [*Towards Universal Atomic Composability: A Formal Model for Multi-Rollup Environments on Ethereum*](docs/a16z-startup-school/) (Dipankar Sarkar, Cryptuon Research — recognized by the **a16z Crypto Startup School**). See [ROADMAP.md](ROADMAP.md) for the vision and the cheapest path to production.
+
+## Why this matters for cross-chain agents
+
+The 2026 on-chain economy is increasingly agentic: autonomous agents and intent solvers operate across many L2s at once, executing strategies that span Base, Optimism, Arbitrum, and beyond in a single logical action. That world needs **atomic composability** — the guarantee that a multi-chain action either happens completely or not at all. Bridges cannot provide it: they move assets through custodial locks and wrapped IOUs, leaving an agent stranded mid-flight if one leg fails.
+
+Tesseract gives cross-chain agents exactly the primitive they need — an **intent-style, all-or-nothing outcome** enforced by on-chain contracts rather than by a trusted party:
+
+- **Atomicity as a settlement guarantee.** An agent expresses a cross-rollup action as an atomic swap group bound by a shared `swap_group_id`. Every leg resolves within the deadline window, or every leg becomes refundable. There is no partial fill, no stranded collateral, and no half-finished route to unwind.
+- **Intent in, outcome out.** The agent declares what it wants (give X on chain A, receive Y on chain B, within N seconds) and Tesseract's Buffer → Resolve → Execute protocol delivers that outcome or cleanly refunds. The coordination window is configurable from 5 to 300 seconds (default 30s), so agents can tune latency against safety per action.
+- **MEV protection by construction.** Each leg is committed as `keccak(payload ‖ secret)` and revealed only after inclusion, so searchers and sequencers cannot front-run an agent's cross-chain intent. A ≥2-block reveal→resolve delay also makes single-block flash-loan attacks structurally impossible.
+- **No new trust surface.** No bridge multisig, no validator quorum, no external chain. Assets stay native on each rollup and the relayer only *submits* transactions — it can never *authorize* resolution. Agents inherit each L2's security, nothing more.
+
+For a DeFi protocol, an intent solver, or an autonomous cross-chain agent, this is the difference between "I hope all my legs land" and "the protocol guarantees they either all land or all refund."
 
 ## Use Cases
+
+### Cross-Chain Agent & Intent Execution
+Give autonomous agents and intent solvers all-or-nothing cross-rollup execution:
+- **Agent Strategies**: An agent executes a multi-L2 strategy as one atomic swap group — it completes everywhere or refunds everywhere, never mid-flight
+- **Intent Settlement**: Declare a desired cross-chain outcome and deadline; Tesseract resolves it atomically or refunds cleanly
+- **Solver Networks**: Solvers coordinate multi-leg fills across rollups without exposing fillable intents to MEV
+- **Automated Rebalancing**: Bots rebalance positions across L2s atomically, with no bridge and no stranded-capital risk
+
+### Cross-Chain DeFi Operations
+Execute atomic transactions across multiple rollups for DeFi protocols:
+- **Arbitrage**: Execute simultaneous trades across Ethereum, Polygon, and Arbitrum
+- **Liquidity Management**: Rebalance liquidity pools across multiple chains atomically
+- **Cross-Chain Lending**: Coordinate collateral deposits and borrows across rollups
+- **Multi-Chain Governance**: Execute governance decisions across multiple networks
 
 ### Cross-Chain DeFi Operations
 Execute atomic transactions across multiple rollups for DeFi protocols:
@@ -437,9 +466,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
+## Roadmap
+
+Tesseract is production-leaning: seven Vyper contracts, a Rust relayer, and a full test and monitoring stack are complete; a third-party security audit is the main gate before mainnet. See **[ROADMAP.md](ROADMAP.md)** for the vision (Tesseract as the atomic-composability layer for the cross-chain agent economy), the near/mid/long-term milestones, and a detailed **[cheapest path to production](ROADMAP.md#cheapest-path-to-production)** — including which low-fee L2 pair to launch on first and the concrete production-viability changes required.
+
 ## Acknowledgments
 
-- Inspired by [CRATE Protocol](https://arxiv.org/html/2502.04659v1) research
+- **Foundational research**: [*Towards Universal Atomic Composability: A Formal Model for Multi-Rollup Environments on Ethereum*](docs/a16z-startup-school/) — Dipankar Sarkar, Cryptuon Research. Recognized by the [a16z Crypto Startup School](docs/a16z-startup-school/).
+- Related work: [CRATE Protocol](https://arxiv.org/html/2502.04659v1) research on cross-rollup atomic transaction execution
 - Smart contracts built with [Vyper](https://vyper.readthedocs.io/)
 - Relayer built with [ethers-rs](https://github.com/gakonst/ethers-rs)
 - Infrastructure powered by [Terraform](https://terraform.io/) and AWS
